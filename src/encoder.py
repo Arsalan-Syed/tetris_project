@@ -14,7 +14,7 @@ BOARD_ROWS = 20
 BOARD_COLUMNS = 10
 
 '''
-
+Converts a tetris game state into a string
 '''
 
 
