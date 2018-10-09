@@ -1,6 +1,16 @@
+"""
+Created by Arsalan Syed on 9th October 2018
+"""
+
 import copy
 
 from random import randrange as rand
+
+
+def rotate_clockwise(shape):
+    return [[shape[y][x]
+             for y in range(len(shape))]
+            for x in range(len(shape[0]) - 1, -1, -1)]
 
 
 def getMaxWidth(piece):
@@ -42,12 +52,18 @@ class Player(object):
 
     def getPossibleNextStates(self, board, nextPiece):
         possibleStates = []
-        width = getMaxWidth(nextPiece)
-        possible_x_placements = 11 - width
-        for x in range(possible_x_placements):
-            y = 0
-            while not check_collision(board,nextPiece,(x,y)):
-                y += 1
 
-            possibleStates.append(join_matrixes(board,nextPiece,(x,y)))
+        currentPiece = nextPiece.copy()
+
+        for i in range(4):
+            width = getMaxWidth(currentPiece)
+            possible_x_placements = 11 - width
+            for x in range(possible_x_placements):
+                y = 0
+                while not check_collision(board, currentPiece, (x, y)):
+                    y += 1
+
+                possibleStates.append(join_matrixes(board, currentPiece, (x, y)))
+
+            currentPiece = rotate_clockwise(currentPiece)
         return possibleStates
