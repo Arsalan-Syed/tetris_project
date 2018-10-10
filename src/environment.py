@@ -39,6 +39,7 @@ import sys
 
 from src import filehandler
 from src.player import Player
+from src.helper import *
 
 # The configuration
 config = {
@@ -84,32 +85,6 @@ tetris_shapes = [
 ]
 
 
-def rotate_clockwise(shape):
-    return [[shape[y][x]
-             for y in range(len(shape))]
-            for x in range(len(shape[0]) - 1, -1, -1)]
-
-
-def check_collision(board, shape, offset):
-    off_x, off_y = offset
-    for cy, row in enumerate(shape):
-        for cx, cell in enumerate(row):
-            try:
-                if cell and board[cy + off_y][cx + off_x]:
-                    return True
-            except IndexError:
-                return True
-    return False
-
-
-def join_matrixes(mat1, mat2, mat2_off):
-    off_x, off_y = mat2_off
-    for cy, row in enumerate(mat2):
-        for cx, val in enumerate(row):
-            mat1[cy + off_y - 1][cx + off_x] += val
-    return mat1
-
-
 def new_board():
     board = [[0 for x in range(config['cols'])]
              for y in range(config['rows'])]
@@ -118,7 +93,9 @@ def new_board():
 
 
 class TetrisApp(object):
-    def __init__(self, useGUI):
+    defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
+
+    def __init__(self, useGUI, weights=defaultWeights):
         if useGUI:
             pygame.init()
             pygame.key.set_repeat(250, 25)
@@ -131,7 +108,7 @@ class TetrisApp(object):
         self.numPieces = 0
         self.rowsCleared = 0
 
-        self.player = Player()
+        self.player = Player(weights)
 
         if useGUI:
             self.screen = pygame.display.set_mode((self.width, self.height))
@@ -218,28 +195,8 @@ class TetrisApp(object):
 
     def remove_row(self, board, row):
         del board[row]
+        self.rowsCleared += 1
         return [[0 for i in range(config['cols'])]] + board
-
-    def drop(self):
-        if not self.gameover and not self.paused:
-            self.stone_y += 1
-            if check_collision(self.board,
-                               self.stone,
-                               (self.stone_x, self.stone_y)):
-                self.board = join_matrixes(
-                    self.board,
-                    self.stone,
-                    (self.stone_x, self.stone_y))
-                self.new_stone()
-                while True:
-                    for i, row in enumerate(self.board[:-1]):
-                        if 0 not in row:
-                            self.board = self.remove_row(
-                                self.board, i)
-                            self.rowsCleared += 1
-                            break
-                    else:
-                        break
 
     def rotate_stone(self):
         if not self.gameover and not self.paused:
@@ -288,7 +245,6 @@ class TetrisApp(object):
                 if 0 not in row:
                     self.board = self.remove_row(
                         self.board, i)
-                    self.rowsCleared += 1
                     break
             else:
                 break
@@ -298,7 +254,6 @@ class TetrisApp(object):
             'ESCAPE': self.quit,
             'LEFT': lambda: self.move(-1),
             'RIGHT': lambda: self.move(+1),
-            'DOWN': self.drop,
             'UP': self.rotate_stone,
             'p': self.toggle_pause,
             'SPACE': self.start_game
@@ -319,7 +274,7 @@ class TetrisApp(object):
                 while True:
                     for i, row in enumerate(self.board[:-1]):
                         if 0 not in row:
-                            self.board = remove_row(
+                            self.board = self.remove_row(
                                 self.board, i)
                             self.rowsCleared += 1
                             break
@@ -342,15 +297,13 @@ class TetrisApp(object):
 
             dont_burn_my_cpu.tick(config['maxfps'])
 
-    def runSequence(self, filename, sequenceNumber):
+    def runSequence(self,sequence):
 
         pygame.time.set_timer(pygame.USEREVENT + 1, config['delay'])
         dont_burn_my_cpu = pygame.time.Clock()
         pieceNumber = 0
 
         self.board = new_board()
-
-        sequence = filehandler.loadSequences(filename)[sequenceNumber]
 
         while 1:
             if not self.gameover and (pieceNumber < len(sequence)):
@@ -369,16 +322,11 @@ class TetrisApp(object):
             dont_burn_my_cpu.tick(config['maxfps'])
             pieceNumber += 1
 
-    def runSequenceNoGUI(self, fileName, sequenceNumber):
+    def runSequenceNoGUI(self, sequence):
         self.board = new_board()
-        sequences = filehandler.loadSequences(fileName)
-        sequence = sequences[sequenceNumber]
 
-        counter = 0
         for pieceType in sequence:
             if not self.gameover:
                 self.makeMove(pieceType)
-                counter += 1
 
-        print("lasted ", counter, " moves")
         return self.rowsCleared
