@@ -2,12 +2,9 @@
 Created by Arsalan Syed on 9th October 2018
 """
 
-import copy
-import itertools
-
 from random import randrange as rand
 import numpy as np
-import environment as env
+import copy
 
 def normalize(x):
     if x > 0:
@@ -153,63 +150,4 @@ class Player(object):
 
             currentPiece = rotate_clockwise(currentPiece)
         return possibleStates
-
-'''
-Determines how good an AI player is by making it play several games
-and counting the average number of rows it clears per game. This will be used
-to compare different genetic algorithm (GA) solutions as well as GA's to
-other local search algorithms 
-'''
-
-# TODO use weights
-def player_fitness(weights):
-    filename = "../sequences/test1.txt"
-    numGames = 3
-    score = 0
-
-    for gameNumber in range(numGames):
-        App = env.TetrisApp(False)
-        score += App.runSequenceNoGUI(filename, gameNumber)
-
-    return score / numGames
-
-def convert(x):
-    result = int(x)
-    if result == 2:
-        return -1
-    return result
-
-
-def getWeightVectorNeighbours(weights,stepSize):
-    weightIncrements = []
-    chars = "012"
-    count = len(weights)
-    for item in itertools.product(chars, repeat=count):
-        weightIncrements.append([convert(x) for x in item])
-
-    neighbours = []
-    for increment in weightIncrements:
-        delta = np.multiply(increment, stepSize)
-        neighbours.append(np.add(weights, delta))
-    return neighbours
-
-# TODO Fitness function should be independent of environment class
-def hill_climb(weight_vector):
-    stepSize = 0.1
-    current_weights = copy.deepcopy(weight_vector)
-
-    while True:
-        bestFitness = -10000000
-        bestWeights = None
-        for neighbour in getWeightVectorNeighbours(current_weights,stepSize):
-            neighbourFitness = player_fitness(current_weights)
-            if neighbourFitness > bestFitness:
-                bestFitness = neighbourFitness
-                bestWeights = neighbour
-
-        if bestFitness <= player_fitness(current_weights):
-            return current_weights
-
-        current_weights = bestWeights
-
 

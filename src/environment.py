@@ -360,10 +360,8 @@ class TetrisApp(object):
             dont_burn_my_cpu.tick(config['maxfps'])
             pieceNumber += 1
 
-    def runSequenceNoGUI(self, fileName, sequenceNumber):
+    def runSequenceNoGUI(self, fileName, sequence):
         self.board = new_board()
-        sequences = filehandler.loadSequences(fileName)
-        sequence = sequences[sequenceNumber]
 
         counter = 0
         for pieceType in sequence:
