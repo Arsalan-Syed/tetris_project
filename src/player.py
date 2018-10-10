@@ -7,17 +7,7 @@ import copy
 from random import randrange as rand
 import numpy as np
 
-'''
-Returns the heuristic score for this board state
-'''
-
-test_board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0,0,0,0,0], [0, 0, 0, 0, 0, 0, 0, 0, 4, 4],
-              [0, 0, 0, 0, 0, 0, 0, 0, 2, 0], [0, 0, 0, 0, 0, 0, 0, 0, 2, 2], [0, 0, 0, 0, 0, 0, 0, 0, 2, 2],
-              [0, 0, 0, 0, 0, 0, 0, 2, 2, 2], [0, 0, 0, 0, 0, 0, 0, 2, 2, 2], [0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
-              [0, 0, 0, 6, 0, 0, 0, 0, 7, 7], [0, 2, 0, 6, 0, 0, 0, 0, 7, 7], [0, 2, 2, 6, 0, 0, 0, 0, 0, 3],
-              [0, 0, 2, 6, 0, 0, 0, 0, 3, 3], [0, 0, 2, 6, 6, 6, 6, 0, 3, 6], [0, 0, 2, 2, 0, 0, 0, 0, 0, 6],
-              [0, 0, 0, 2, 0, 0, 3, 0, 0, 6], [0, 0, 0, 6, 0, 3, 3, 0, 0, 6], [0, 4, 0, 6, 2, 3, 0, 4, 4, 4],
-              [0, 4, 0, 6, 2, 2, 0, 0, 1, 4], [4, 4, 0, 6, 0, 2, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+MAX_BUMPINESS = 180
 
 
 def normalize(x):
@@ -27,17 +17,21 @@ def normalize(x):
         return 0
 
 
+'''
+Higher height is worse
+'''
+
+
 def maxHeight(board):
     height = 0
     while height < len(board):
         if sum(board[height]) > 0:
             break
         height += 1
-    return len(board)-height
+    return height
 
 
-def averageHeight(board):
-    numRows = len(board)
+def getHeights(board):
     numColumns = len(board[0])
 
     heights = np.zeros(numColumns)
@@ -45,18 +39,59 @@ def averageHeight(board):
         normalizedRow = [normalize(x) for x in row]
         heights = np.add(normalizedRow, heights)
 
-    return sum(heights)/numRows
+    return heights
 
 
-# TODO
+'''
+Want average height to be as low as possible
+'''
+
+
+def averageHeight(board):
+    numRows = len(board)
+    heights = getHeights(board)
+    return sum(heights) / numRows
+
+
 def numberOfHoles(board):
-    pass
+    numRows = len(board)
+    numColumns = len(board[0])
+    numberOfHoles = 0
+    for i in range(numRows):
+        for j in range(numColumns):
+            try:
+                top = normalize(board[i][j + 1])
+                bottom = normalize(board[i][j - 1])
+                left = normalize(board[i - 1][j])
+                right = normalize(board[i + 1][j])
+            except:
+                continue
+
+            if top + bottom + left + right == 4:
+                numberOfHoles += 1
+
+    return numberOfHoles
 
 
-# TODO
+def bumpiness(board):
+    heights = getHeights(board)
+    differences = []
+    for i in range(len(heights) - 1):
+        differences.append(np.abs(heights[i + 1] - heights[i]))
+    return sum(differences)
+
+
+'''
+All of the heuristic terms should be minimzed,
+we want less height,less bumpiness, fewer holes.
+So we should maximize -1*heuristicValues
+'''
+
+
 def heuristicValue(board, weights):
-    assert(len(weights)==4)
-    return weights[0]*maxHeight(board)+weights[1]*averageHeight(board)+weights[2]*numberOfHoles(board)
+    assert (len(weights) == 4)
+    heuristicValueVector = [maxHeight(board), averageHeight(board), numberOfHoles(board), bumpiness(board)]
+    return np.dot(weights, -1 * heuristicValueVector)
 
 
 def rotate_clockwise(shape):
@@ -119,3 +154,25 @@ class Player(object):
 
             currentPiece = rotate_clockwise(currentPiece)
         return possibleStates
+
+
+'''
+def hill_climb(startNode):
+    currentNode = startNode
+    maxIterations = 1000
+    iter = 0
+
+    while (iter < maxIterations):
+        bestEvaluation = MIN_VALUE
+        bestNode = None
+        for neighbour in get_neighbours(currentNode):
+            neighbourEvaluation = evaluation(neighbour)
+            if neighbourEvaluation > bestEvaluation:
+                bestNode = neighbour
+                bestEvaluation = neighbourEvaluation
+
+        if bestEvaluation <= evaluation(currentNode):
+            return currentNode
+
+        currentNode = bestNode
+'''
