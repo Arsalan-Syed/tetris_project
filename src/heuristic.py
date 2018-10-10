@@ -10,8 +10,10 @@ def print_board(board):
         print(row)
 
 
+defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
+
 # Evaluates the board and returns a float
-def evaluate(board):
+def evaluate(board, w=defaultWeights):
     # Extract height and width and create a board that is more suitable for evaluation
     height = len(board) - 1
     width = len(board[0])
@@ -72,7 +74,7 @@ def evaluate(board):
     avgContinuity = sum(rowContinuity) / maxHeight
 
     # Calculate the heuristic score!
-    score = (avgContinuity + maxContinuity + clearedRows*5) - (numberOfHoles + avgHeight + maxHeight + bumpiness)
+    score = (avgContinuity*w[0] + maxContinuity*w[1] + clearedRows*w[2]) - (numberOfHoles*w[3] + avgHeight*w[4] + maxHeight*w[5] + bumpiness*w[6])
     return score
 
 
