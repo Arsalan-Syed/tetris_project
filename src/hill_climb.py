@@ -4,6 +4,7 @@ import itertools
 import copy
 
 from src import filehandler
+from src.environment import TetrisApp
 
 """
 This class is used to take some existing weights and optimize them using
@@ -27,7 +28,7 @@ def fitness(weights):
 
     sequences = filehandler.loadSequences(filename)
     for sequence in sequences:
-        App = env.TetrisApp(False)
+        App = TetrisApp(False)
         score += App.runSequenceNoGUI(filename, sequence)
 
     return score / len(sequences)
