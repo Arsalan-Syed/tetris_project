@@ -35,14 +35,14 @@
 from random import randrange as rand
 import pygame, sys
 
-# The configuration
 from src.player import Player
 
+# The configuration
 config = {
     'cell_size': 20,
     'cols': 10,
     'rows': 20,
-    'delay': 300,
+    'delay': 10,
     'maxfps': 30
 }
 
@@ -286,6 +286,7 @@ class TetrisApp(object):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    print(self.board)
                     print("Score: ", self.score)
                     print("Number of pieces used: ", self.numPieces)
                     print("Number of rows cleared: ", self.rowsCleared)
@@ -297,7 +298,6 @@ class TetrisApp(object):
                             key_actions[key]()
 
             dont_burn_my_cpu.tick(config['maxfps'])
-
 
 
 if __name__ == '__main__':

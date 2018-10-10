@@ -5,6 +5,58 @@ Created by Arsalan Syed on 9th October 2018
 import copy
 
 from random import randrange as rand
+import numpy as np
+
+'''
+Returns the heuristic score for this board state
+'''
+
+test_board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0,0,0,0,0], [0, 0, 0, 0, 0, 0, 0, 0, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 2, 0], [0, 0, 0, 0, 0, 0, 0, 0, 2, 2], [0, 0, 0, 0, 0, 0, 0, 0, 2, 2],
+              [0, 0, 0, 0, 0, 0, 0, 2, 2, 2], [0, 0, 0, 0, 0, 0, 0, 2, 2, 2], [0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+              [0, 0, 0, 6, 0, 0, 0, 0, 7, 7], [0, 2, 0, 6, 0, 0, 0, 0, 7, 7], [0, 2, 2, 6, 0, 0, 0, 0, 0, 3],
+              [0, 0, 2, 6, 0, 0, 0, 0, 3, 3], [0, 0, 2, 6, 6, 6, 6, 0, 3, 6], [0, 0, 2, 2, 0, 0, 0, 0, 0, 6],
+              [0, 0, 0, 2, 0, 0, 3, 0, 0, 6], [0, 0, 0, 6, 0, 3, 3, 0, 0, 6], [0, 4, 0, 6, 2, 3, 0, 4, 4, 4],
+              [0, 4, 0, 6, 2, 2, 0, 0, 1, 4], [4, 4, 0, 6, 0, 2, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+
+def normalize(x):
+    if x > 0:
+        return 1
+    else:
+        return 0
+
+
+def maxHeight(board):
+    height = 0
+    while height < len(board):
+        if sum(board[height]) > 0:
+            break
+        height += 1
+    return len(board)-height
+
+
+def averageHeight(board):
+    numRows = len(board)
+    numColumns = len(board[0])
+
+    heights = np.zeros(numColumns)
+    for row in board:
+        normalizedRow = [normalize(x) for x in row]
+        heights = np.add(normalizedRow, heights)
+
+    return sum(heights)/numRows
+
+
+# TODO
+def numberOfHoles(board):
+    pass
+
+
+# TODO
+def heuristicValue(board, weights):
+    assert(len(weights)==4)
+    return weights[0]*maxHeight(board)+weights[1]*averageHeight(board)+weights[2]*numberOfHoles(board)
 
 
 def rotate_clockwise(shape):

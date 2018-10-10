@@ -4,28 +4,13 @@ Created by Arsalan Syed on 9th October 2018
 
 MIN_VALUE = float("-inf")
 
-'''
-Returns all neighbours to a gamestate in the game tree
-'''
 
-
-# TODO
-def get_neighbours(node):
-    return None
-
-
-'''
-Returns the heuristic score for this node
-'''
-
-
-# TODO
-def evaluation(node):
-    return 0
 
 
 '''
 Attempts to find a local maximum
+
+Is node a game state or heuristic weights ?
 '''
 
 
