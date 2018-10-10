@@ -316,6 +316,15 @@ class TetrisApp(object):
                 # Get the next move from the player
                 self.board = self.player.play(self.board, self.stone)
                 self.new_stone()
+                while True:
+                    for i, row in enumerate(self.board[:-1]):
+                        if 0 not in row:
+                            self.board = remove_row(
+                                self.board, i)
+                            self.rowsCleared += 1
+                            break
+                    else:
+                        break
 
             pygame.time.delay(config['delay'])
 
