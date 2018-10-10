@@ -1,10 +1,7 @@
-import numpy as np
-import environment as env
 import itertools
-import copy
-
-from src import filehandler
-from src.environment import TetrisApp
+from src.helper import *
+from src.evaluation import *
+import random
 
 """
 This class is used to take some existing weights and optimize them using
@@ -12,27 +9,6 @@ a hill climbing algorithm. It takes the existing weights, find all possible
 neighbours by making small increments to the weights and then evaluates them
 with the fitness function.  
 """
-
-'''
-Determines how good an AI player is by making it play several games
-and counting the average number of rows it clears per game. This will be used
-to compare different genetic algorithm (GA) solutions as well as GA's to
-other local search algorithms
-'''
-
-
-# TODO use weights
-def fitness(weights):
-    filename = "../sequences/test1.txt"
-    score = 0
-
-    sequences = filehandler.loadSequences(filename)
-    for sequence in sequences:
-        App = TetrisApp(False)
-        score += App.runSequenceNoGUI(filename, sequence)
-
-    return score / len(sequences)
-
 
 def convert(x):
     result = int(x)
@@ -52,7 +28,9 @@ def getWeightVectorNeighbours(weights, stepSize):
     for increment in weightIncrements:
         delta = np.multiply(increment, stepSize)
         neighbours.append(np.add(weights, delta))
-    return neighbours
+
+    sampleSize = 10
+    return random.sample(neighbours, sampleSize)
 
 
 def hill_climb(weight_vector):
@@ -62,8 +40,9 @@ def hill_climb(weight_vector):
     while True:
         bestFitness = -10000000
         bestWeights = None
+        print(current_weights)
         for neighbour in getWeightVectorNeighbours(current_weights, stepSize):
-            neighbourFitness = fitness(current_weights)
+            neighbourFitness = fitness(neighbour)
             if neighbourFitness > bestFitness:
                 bestFitness = neighbourFitness
                 bestWeights = neighbour
@@ -72,3 +51,5 @@ def hill_climb(weight_vector):
             return current_weights
 
         current_weights = bestWeights
+
+hill_climb([1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0])

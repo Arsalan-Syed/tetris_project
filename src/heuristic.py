@@ -4,7 +4,6 @@ import copy
 
 def print_board(board):
     height = len(board)
-    width = len(board[0])
     for h in reversed(range(height)):
         row = " ".join([str(val) for val in board[h]])
         print(row)

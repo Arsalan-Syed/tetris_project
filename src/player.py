@@ -8,9 +8,12 @@ from src.helper import *
 
 class Player(object):
 
+    def __init__(self, weights):
+        self.weights = weights
+
     def play(self, board, nextPiece):
         nextStates = self.getPossibleNextStates(board, nextPiece)
-        scores = [heuristic.evaluate(state) for state in nextStates]
+        scores = [heuristic.evaluate(state, w = self.weights) for state in nextStates]
         return nextStates[scores.index(max(scores))]
 
     '''
