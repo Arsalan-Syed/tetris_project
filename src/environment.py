@@ -42,7 +42,7 @@ config = {
     'cell_size': 20,
     'cols': 10,
     'rows': 20,
-    'delay': 1000,
+    'delay': 300,
     'maxfps': 30
 }
 
@@ -129,6 +129,10 @@ class TetrisApp(object):
         self.gameover = False
         self.paused = False
 
+        self.score = 0
+        self.numPieces = 0
+        self.rowsCleared = 0
+
         self.player = Player()
 
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -142,6 +146,8 @@ class TetrisApp(object):
         self.stone = tetris_shapes[rand(len(tetris_shapes))]
         self.stone_x = int(config['cols'] / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
+
+        self.numPieces += 1
 
         if check_collision(self.board,
                            self.stone,
@@ -215,6 +221,7 @@ class TetrisApp(object):
                         if 0 not in row:
                             self.board = remove_row(
                                 self.board, i)
+                            self.rowsCleared += 1
                             break
                     else:
                         break
@@ -236,14 +243,21 @@ class TetrisApp(object):
             self.gameover = False
 
     def render(self):
-        self.screen.fill((0, 0, 0))
-        if self.paused:
-            self.center_msg("Paused")
-        else:
-            self.draw_matrix(self.board, (0, 0))
-            self.draw_matrix(self.stone,
-                             (self.stone_x,
-                              self.stone_y))
+        if not self.gameover:
+            self.screen.fill((0, 0, 0))
+
+            if self.paused:
+                self.center_msg("Paused")
+            else:
+                self.draw_matrix(self.board, (0, 0))
+                self.draw_matrix(self.stone,
+                                 (self.stone_x,
+                                  self.stone_y))
+
+        if self.gameover:
+            self.center_msg("""Game Over!
+            Press space to continue""")
+
         pygame.display.update()
 
     def run(self):
@@ -259,17 +273,22 @@ class TetrisApp(object):
 
         pygame.time.set_timer(pygame.USEREVENT + 1, config['delay'])
         dont_burn_my_cpu = pygame.time.Clock()
-        while not self.gameover:
+
+        while 1:
             self.render()
 
-            # Get the next move from the player
-            self.board = self.player.play(self.board, self.stone)
-            self.new_stone()
+            if not self.gameover:
+                # Get the next move from the player
+                self.board = self.player.play(self.board, self.stone)
+                self.new_stone()
 
             pygame.time.delay(config['delay'])
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    print("Score: ", self.score)
+                    print("Number of pieces used: ", self.numPieces)
+                    print("Number of rows cleared: ", self.rowsCleared)
                     self.quit()
                 elif event.type == pygame.KEYDOWN:
                     for key in key_actions:
@@ -279,7 +298,6 @@ class TetrisApp(object):
 
             dont_burn_my_cpu.tick(config['maxfps'])
 
-        self.center_msg("""Game Over! Press space to continue""")
 
 
 if __name__ == '__main__':
