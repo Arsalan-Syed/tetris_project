@@ -33,8 +33,11 @@
 # THE SOFTWARE.
 
 from random import randrange as rand
-import pygame, sys
 
+import pygame
+import sys
+
+from src import filehandler
 from src.player import Player
 
 # The configuration
@@ -99,11 +102,6 @@ def check_collision(board, shape, offset):
     return False
 
 
-def remove_row(board, row):
-    del board[row]
-    return [[0 for i in range(config['cols'])]] + board
-
-
 def join_matrixes(mat1, mat2, mat2_off):
     off_x, off_y = mat2_off
     for cy, row in enumerate(mat2):
@@ -120,27 +118,40 @@ def new_board():
 
 
 class TetrisApp(object):
-    def __init__(self):
-        pygame.init()
-        pygame.key.set_repeat(250, 25)
+    def __init__(self, useGUI):
+        if useGUI:
+            pygame.init()
+            pygame.key.set_repeat(250, 25)
         self.width = config['cell_size'] * config['cols']
         self.height = config['cell_size'] * config['rows']
 
         self.gameover = False
         self.paused = False
 
-        self.score = 0
         self.numPieces = 0
         self.rowsCleared = 0
 
         self.player = Player()
 
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.event.set_blocked(pygame.MOUSEMOTION)  # We do not need
-        # mouse movement
-        # events, so we
-        # block them.
-        self.init_game()
+        if useGUI:
+            self.screen = pygame.display.set_mode((self.width, self.height))
+            pygame.event.set_blocked(pygame.MOUSEMOTION)
+            # We do not need
+            # mouse movement
+            # events, so we
+            # block them.
+
+    def new_stone_from_sequence(self, pieceNumber):
+        self.stone = tetris_shapes[pieceNumber]
+        self.stone_x = int(config['cols'] / 2 - len(self.stone[0]) / 2)
+        self.stone_y = 0
+
+        self.numPieces += 1
+
+        if check_collision(self.board,
+                           self.stone,
+                           (self.stone_x, self.stone_y)):
+            self.gameover = True
 
     def new_stone(self):
         self.stone = tetris_shapes[rand(len(tetris_shapes))]
@@ -205,6 +216,10 @@ class TetrisApp(object):
         pygame.display.update()
         sys.exit()
 
+    def remove_row(self, board, row):
+        del board[row]
+        return [[0 for i in range(config['cols'])]] + board
+
     def drop(self):
         if not self.gameover and not self.paused:
             self.stone_y += 1
@@ -219,7 +234,7 @@ class TetrisApp(object):
                 while True:
                     for i, row in enumerate(self.board[:-1]):
                         if 0 not in row:
-                            self.board = remove_row(
+                            self.board = self.remove_row(
                                 self.board, i)
                             self.rowsCleared += 1
                             break
@@ -249,16 +264,34 @@ class TetrisApp(object):
             if self.paused:
                 self.center_msg("Paused")
             else:
-                self.draw_matrix(self.board, (0, 0))
+                try:
+                    self.draw_matrix(self.board, (0, 0))
+                except:
+                    self.gameover = True
+                '''
                 self.draw_matrix(self.stone,
-                                 (self.stone_x,
-                                  self.stone_y))
-
+                                     (self.stone_x,
+                                   self.stone_y))
+                '''
         if self.gameover:
             self.center_msg("""Game Over!
             Press space to continue""")
 
         pygame.display.update()
+
+    def makeMove(self, pieceType):
+        self.new_stone_from_sequence(pieceType)
+        self.board = self.player.play(self.board, self.stone)
+
+        while True:
+            for i, row in enumerate(self.board[:-1]):
+                if 0 not in row:
+                    self.board = self.remove_row(
+                        self.board, i)
+                    self.rowsCleared += 1
+                    break
+            else:
+                break
 
     def run(self):
         key_actions = {
@@ -273,6 +306,8 @@ class TetrisApp(object):
 
         pygame.time.set_timer(pygame.USEREVENT + 1, config['delay'])
         dont_burn_my_cpu = pygame.time.Clock()
+        self.board = new_board()
+        self.new_stone()
 
         while 1:
             self.render()
@@ -287,7 +322,6 @@ class TetrisApp(object):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     print(self.board)
-                    print("Score: ", self.score)
                     print("Number of pieces used: ", self.numPieces)
                     print("Number of rows cleared: ", self.rowsCleared)
                     self.quit()
@@ -299,7 +333,43 @@ class TetrisApp(object):
 
             dont_burn_my_cpu.tick(config['maxfps'])
 
+    def runSequence(self, filename, sequenceNumber):
 
-if __name__ == '__main__':
-    App = TetrisApp()
-    App.run()
+        pygame.time.set_timer(pygame.USEREVENT + 1, config['delay'])
+        dont_burn_my_cpu = pygame.time.Clock()
+        pieceNumber = 0
+
+        self.board = new_board()
+
+        sequence = filehandler.loadSequences(filename)[sequenceNumber]
+
+        while 1:
+            if not self.gameover and (pieceNumber < len(sequence)):
+                self.makeMove(sequence[pieceNumber])
+
+            self.render()
+
+            pygame.time.delay(config['delay'])
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    print("Number of pieces used: ", self.numPieces)
+                    print("Number of rows cleared: ", self.rowsCleared)
+                    self.quit()
+
+            dont_burn_my_cpu.tick(config['maxfps'])
+            pieceNumber += 1
+
+    def runSequenceNoGUI(self, fileName, sequenceNumber):
+        self.board = new_board()
+        sequences = filehandler.loadSequences(fileName)
+        sequence = sequences[sequenceNumber]
+
+        counter = 0
+        for pieceType in sequence:
+            if not self.gameover:
+                self.makeMove(pieceType)
+                counter += 1
+
+        print("lasted ", counter, " moves")
+        return self.rowsCleared
