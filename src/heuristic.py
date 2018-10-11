@@ -12,7 +12,7 @@ def print_board(board):
 
 defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
 
-# Evaluates the board and returns a float
+
 def evaluate(board, weights=defaultWeights):
     # Extract height and width and create a board that is more suitable for evaluation
     height = len(board) - 1
@@ -76,8 +76,11 @@ def evaluate(board, weights=defaultWeights):
     # Full lines
     fullLines = numberOfFullLines(board)
 
+    # Lose penalty
+    losePenalty = getIsLoss(board)
+
     # Calculate the heuristic score!
-    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2]) - (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6] + fullLines * weights[7])
+    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2]) - (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6] + fullLines * weights[7] + losePenalty * weights[8])
     return score
 
 '''
@@ -85,6 +88,14 @@ If a row is full, each element in the row must be non-zero
 '''
 def numberOfFullLines(board):
     return len([row for row in board if np.count_nonzero(row) == len(row)])
+
+
+'''
+Returns true if the game state results in a loss
+'''
+# TODO
+def getIsLoss(board):
+    return sum(board[0]) > 0
 
 
 def holes_v1(board, width, maxHeight):
