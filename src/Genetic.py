@@ -21,7 +21,7 @@ def obj_func(individual):
 
 
 def offspring_of_two(individual1, individual2):
-    where_to_split = len(individual1) // 2
+    where_to_split = random.randint(0, len(individual1))
     offsprings = []
     offsprings.append(individual1[:where_to_split] + individual2[where_to_split:])
     offsprings.append(individual2[:where_to_split] + individual1[where_to_split:])
