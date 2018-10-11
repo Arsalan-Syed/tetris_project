@@ -15,7 +15,7 @@ def obj_func(individual):
     return random.randint(1,10)
 
 def offsprint_of_two(individual1, individual2):
-    where_to_split = len(individual1)//2
+    where_to_split = random.randint(0,len(individual1))
     offsprints = []
     offsprints.append(individual1[:where_to_split] + individual2[where_to_split:])
     offsprints.append(individual2[:where_to_split] + individual1[where_to_split:])
@@ -29,7 +29,7 @@ def select(individuals, select_this_many):
 
 
 def optimize_it():
-    population = create_initial_population(20, 5, 10) # create 20 integer lists each having 5 elements and the elements are from 1 to 10
+    individuals = create_initial_population(20, 5, 10) # create 20 integer lists each having 5 elements and the elements are from 1 to 10
     best_objective_value = 99999
     iteration = 0
     index_of_it = None
