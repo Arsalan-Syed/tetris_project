@@ -1,6 +1,7 @@
 # heuristic.py
 
 import copy
+import numpy as np
 
 def print_board(board):
     height = len(board)
@@ -72,9 +73,18 @@ def evaluate(board, weights=defaultWeights):
     # Average continuity
     avgContinuity = sum(rowContinuity) / maxHeight
 
+    # Full lines
+    fullLines = numberOfFullLines(board)
+
     # Calculate the heuristic score!
-    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2]) - (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
+    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2]) - (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6] + fullLines * weights[7])
     return score
+
+'''
+If a row is full, each element in the row must be non-zero
+'''
+def numberOfFullLines(board):
+    return len([row for row in board if np.count_nonzero(row) == len(row)])
 
 
 def holes_v1(board, width, maxHeight):

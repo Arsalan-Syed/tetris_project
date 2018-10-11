@@ -44,7 +44,7 @@ config = {
     'cell_size': 20,
     'cols': 10,
     'rows': 20,
-    'delay': 10,
+    'delay': 1,
     'maxfps': 30
 }
 
@@ -91,7 +91,7 @@ def new_board():
 
 
 class TetrisApp(object):
-    defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
+    defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0, 1.0]
 
     def __init__(self, useGUI, weights=defaultWeights):
         if useGUI:
@@ -324,8 +324,10 @@ class TetrisApp(object):
 
     def runSequenceNoGUI(self, sequence):
         self.board = new_board()
-
+        print("Running sequence")
         for i in range(len(sequence)-1):
+            if i%50==0:
+                print("Piece",i)
             pieceType = sequence[i]
             nextPiece = sequence[i+1]
 

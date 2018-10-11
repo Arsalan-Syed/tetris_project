@@ -5,7 +5,9 @@ import src.filehandler as fh
 
 def main():
     random = False
-    App = env.TetrisApp(True)
+    useGUI = True
+
+    App = env.TetrisApp(useGUI)
 
     if random:
         App.run()
