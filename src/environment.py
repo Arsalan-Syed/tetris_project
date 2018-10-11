@@ -117,8 +117,10 @@ class TetrisApp(object):
             # events, so we
             # block them.
 
-    def new_stone_from_sequence(self, currentPieceType):
+    def new_stone_from_sequence(self, currentPieceType, nextPieceType):
         self.stone = tetris_shapes[currentPieceType]
+        self.nextStone = tetris_shapes[nextPieceType]
+
         self.stone_x = int(config['cols'] / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
 
@@ -236,8 +238,8 @@ class TetrisApp(object):
         pygame.display.update()
 
     def makeMove(self, pieceType, nextPieceType):
-        self.new_stone_from_sequence(pieceType)
-        self.board = self.player.play(self.board, self.stone, nextPieceType)
+        self.new_stone_from_sequence(pieceType, nextPieceType)
+        self.board = self.player.play(self.board, self.stone, self.nextStone)
 
         while True:
             for i, row in enumerate(self.board[:-1]):
@@ -306,7 +308,7 @@ class TetrisApp(object):
 
         while 1:
             if not self.gameover and (pieceNumber < len(sequence)):
-                self.makeMove(sequence[pieceNumber], nextPieceType=sequence[pieceNumber+1])
+                self.makeMove(sequence[pieceNumber], sequence[pieceNumber+1])
 
             self.render()
 
@@ -329,6 +331,6 @@ class TetrisApp(object):
             nextPiece = sequence[i+1]
 
             if not self.gameover:
-                self.makeMove(pieceType, nextPieceType=nextPiece)
+                self.makeMove(pieceType, nextPiece)
 
         return self.rowsCleared
