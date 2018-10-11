@@ -25,6 +25,3 @@ def fitness(weights):
 
 # Default, note 1000 total pieces used in test1.txt
 print(fitness([1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]))
-
-# Higher fitness
-print(fitness([1., 0.8, 5.2, 1.9, 0.8, 0.9, 0.9]))

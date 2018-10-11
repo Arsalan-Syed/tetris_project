@@ -326,7 +326,7 @@ class TetrisApp(object):
     def runSequenceNoGUI(self, sequence):
         self.board = new_board()
 
-        for i in range(sequence)-1:
+        for i in range(len(sequence)-1):
             pieceType = sequence[i]
             nextPiece = sequence[i+1]
 
