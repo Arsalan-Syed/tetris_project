@@ -32,9 +32,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from random import randrange as rand
-
 import pygame
+from random import choice
 import sys
 
 from src.player import Player
@@ -132,7 +131,7 @@ class TetrisApp(object):
             self.gameover = True
 
     def new_stone(self):
-        self.stone = tetris_shapes[rand(len(tetris_shapes))]
+        self.stone = choice(tetris_shapes)
         self.stone_x = int(config['cols'] / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
 
