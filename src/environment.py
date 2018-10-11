@@ -37,7 +37,6 @@ from random import randrange as rand
 import pygame
 import sys
 
-from src import filehandler
 from src.player import Player
 from src.helper import *
 
@@ -118,8 +117,8 @@ class TetrisApp(object):
             # events, so we
             # block them.
 
-    def new_stone_from_sequence(self, pieceNumber):
-        self.stone = tetris_shapes[pieceNumber]
+    def new_stone_from_sequence(self, currentPieceType):
+        self.stone = tetris_shapes[currentPieceType]
         self.stone_x = int(config['cols'] / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
 
@@ -236,9 +235,9 @@ class TetrisApp(object):
 
         pygame.display.update()
 
-    def makeMove(self, pieceType):
+    def makeMove(self, pieceType, nextPieceType):
         self.new_stone_from_sequence(pieceType)
-        self.board = self.player.play(self.board, self.stone)
+        self.board = self.player.play(self.board, self.stone, nextPieceType)
 
         while True:
             for i, row in enumerate(self.board[:-1]):
@@ -307,7 +306,7 @@ class TetrisApp(object):
 
         while 1:
             if not self.gameover and (pieceNumber < len(sequence)):
-                self.makeMove(sequence[pieceNumber])
+                self.makeMove(sequence[pieceNumber], nextPieceType=sequence[pieceNumber+1])
 
             self.render()
 
@@ -325,8 +324,11 @@ class TetrisApp(object):
     def runSequenceNoGUI(self, sequence):
         self.board = new_board()
 
-        for pieceType in sequence:
+        for i in range(sequence)-1:
+            pieceType = sequence[i]
+            nextPiece = sequence[i+1]
+
             if not self.gameover:
-                self.makeMove(pieceType)
+                self.makeMove(pieceType, nextPieceType=nextPiece)
 
         return self.rowsCleared

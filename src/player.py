@@ -11,8 +11,15 @@ class Player(object):
     def __init__(self, weights):
         self.weights = weights
 
-    def play(self, board, nextPiece):
-        nextStates = self.getPossibleNextStates(board, nextPiece)
+    '''
+    board: a 2D array representing the board
+    currentPiece: the piece that we can move at the moment
+    nextPiece: the piece that will be provided once currentPiece is placed
+    
+    returns the new state of the board once currentPiece is placed
+    '''
+    def play(self, board, currentPiece, nextPiece=-1):
+        nextStates = self.getPossibleNextStates(board, currentPiece)
         scores = [heuristic.evaluate(state, w = self.weights) for state in nextStates]
         return nextStates[scores.index(max(scores))]
 
