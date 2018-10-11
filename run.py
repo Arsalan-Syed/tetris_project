@@ -3,8 +3,8 @@
 import src.environment as env
 
 def main():
-    App = env.TetrisApp(True)
-    App.run()
+    app = env.TetrisApp(True)
+    app.run()
 
 if __name__ == '__main__':
-	main()
+    main()
