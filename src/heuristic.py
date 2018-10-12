@@ -1,6 +1,7 @@
 # heuristic.py
 
 import copy
+import numpy as np
 
 def print_board(board):
     height = len(board)
@@ -11,38 +12,45 @@ def print_board(board):
 
 defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
 
-# Evaluates the board and returns a float
-def evaluate(board, w=defaultWeights):
+
+def evaluate(board, weights=defaultWeights):
     # Extract height and width and create a board that is more suitable for evaluation
     height = len(board) - 1
     width = len(board[0])
     evalboard = copy.copy(list(reversed(board[0:height])))
 
     # Remove full rows
-    clearedRows = 0
-    while True:
-        for h in range(height):
-            if 0 not in evalboard[h]:
-                del evalboard[h]
-                evalboard = copy.copy(evalboard + [[0]*width])
-                clearedRows += 1
-                break
-        else:
-            break
+    fullRows = []
+    for h in reversed(range(height)):
+        if 0 not in evalboard[h]:
+            fullRows.append(h)
+
+    clearedRows = len(fullRows)
+    for h in fullRows:
+        del evalboard[h]
+        evalboard.append([0] * width)
 
     # Extract height of each column
-    columnHeight = [0]*width
+    columnHeight = [0] * width
+    # Extract all the holes while we're at it
+    holes = 0
     for c in range(width):
-        h = height-1
-        while h > 0:
+        h = height - 1
+        while h >= 0:
             if evalboard[h][c] != 0:
+                # Set to h + 1 since we convert from zero-index to one-index
+                columnHeight[c] = h + 1
                 break
             h -= 1
-        # Set to h + 1 since we convert from zero-index to one-index
-        columnHeight[c] = h+1
+        while h >= 0:
+            if evalboard[h][c] == 0:
+                holes += 1
+            h -= 1
+
     # Get the max height as well
     maxHeight = max(columnHeight)
 
+    '''
     # Get the largest consecutive row of cells for each row
     rowContinuity = [0]*height
     for h in range(height):
@@ -56,10 +64,12 @@ def evaluate(board, w=defaultWeights):
                 consecutiveLength = 0
         rowContinuity[h] = max(rowContinuity[h], consecutiveLength)
     maxContinuity = max(rowContinuity)
+    '''
+    rowContinuity = [0]
+    maxContinuity = 0
 
     # Holes
-    numberOfHoles = min(holes_v1(evalboard, width, maxHeight),
-                        holes_v2(evalboard, width, maxHeight))
+    numberOfHoles = holes
 
     # Bumpiness
     bumpiness = 0
@@ -70,13 +80,29 @@ def evaluate(board, w=defaultWeights):
     avgHeight = sum(columnHeight) / width
 
     # Average continuity
-    avgContinuity = sum(rowContinuity) / maxHeight
+    avgContinuity = 0 #sum(rowContinuity) / maxHeight
+
+    # Full lines
+    fullLines = 0 #numberOfFullLines(board)
 
     # Calculate the heuristic score!
-    score = (avgContinuity*w[0] +
-             maxContinuity*w[1] +
-             clearedRows*w[2]) - (numberOfHoles*w[3] + avgHeight*w[4] + maxHeight*w[5] + bumpiness*w[6])
+    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2])
+    score -= (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
     return score
+
+'''
+If a row is full, each element in the row must be non-zero
+'''
+def numberOfFullLines(board):
+    return len([row for row in board if np.count_nonzero(row) == len(row)])
+
+
+'''
+Returns true if the game state results in a loss
+'''
+# TODO
+def getIsLoss(board):
+    return sum(board[0]) > 0
 
 
 def holes_v1(board, width, maxHeight):

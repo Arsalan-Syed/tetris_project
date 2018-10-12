@@ -52,4 +52,4 @@ def hill_climb(weight_vector):
 
         current_weights = bestWeights
 
-hill_climb([1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0])
+hill_climb([1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0, 1.0])

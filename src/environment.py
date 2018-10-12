@@ -35,8 +35,8 @@
 import pygame
 from random import choice
 import sys
+import numpy as np
 
-from src import filehandler
 from src.player import Player
 from src.helper import *
 
@@ -45,7 +45,7 @@ config = {
     'cell_size': 20,
     'cols': 10,
     'rows': 20,
-    'delay': 10,
+    'delay': 1,
     'maxfps': 30
 }
 
@@ -88,11 +88,11 @@ def new_board():
     board = [[0 for x in range(config['cols'])]
              for y in range(config['rows'])]
     board += [[1 for x in range(config['cols'])]]
-    return board
+    return np.array(board)
 
 
 class TetrisApp(object):
-    defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
+    defaultWeights = [1.0, 1.0, 4.0, 2.0, 1.0, 1.0, 1.0, 1.0]
 
     def __init__(self, useGUI, weights=defaultWeights):
         if useGUI:
@@ -117,8 +117,10 @@ class TetrisApp(object):
             # events, so we
             # block them.
 
-    def new_stone_from_sequence(self, pieceNumber):
-        self.stone = tetris_shapes[pieceNumber]
+    def new_stone_from_sequence(self, currentPieceType, nextPieceType):
+        self.stone = tetris_shapes[currentPieceType]
+        self.nextStone = tetris_shapes[nextPieceType]
+
         self.stone_x = int(config['cols'] / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
 
@@ -193,9 +195,10 @@ class TetrisApp(object):
         sys.exit()
 
     def remove_row(self, board, row):
-        del board[row]
+        board = np.delete(board, row, axis=0)
         self.rowsCleared += 1
-        return [[0 for i in range(config['cols'])]] + board
+        newRow = np.array([0 for i in range(config['cols'])])
+        return np.vstack((newRow, board))
 
     def rotate_stone(self):
         if not self.gameover and not self.paused:
@@ -235,9 +238,10 @@ class TetrisApp(object):
 
         pygame.display.update()
 
-    def makeMove(self, pieceType):
-        self.new_stone_from_sequence(pieceType)
-        self.board = self.player.play(self.board, self.stone)
+    def makeMove(self, pieceType, nextPieceType):
+        self.new_stone_from_sequence(pieceType, nextPieceType)
+        #self.board = self.player.play(self.board, [self.stone], [pieceType])
+        self.board = self.player.play(self.board, [self.stone,self.nextStone], [pieceType, nextPieceType])
 
         while True:
             for i, row in enumerate(self.board[:-1]):
@@ -268,7 +272,7 @@ class TetrisApp(object):
 
             if not self.gameover:
                 # Get the next move from the player
-                self.board = self.player.play(self.board, self.stone)
+                self.board = self.player.bestMove(self.board, self.stone)
                 self.new_stone()
                 while True:
                     for i, row in enumerate(self.board[:-1]):
@@ -305,8 +309,12 @@ class TetrisApp(object):
         self.board = new_board()
 
         while 1:
-            if not self.gameover and (pieceNumber < len(sequence)):
-                self.makeMove(sequence[pieceNumber])
+            if not self.gameover and (pieceNumber < len(sequence)-1):
+                self.makeMove(sequence[pieceNumber], sequence[pieceNumber+1])
+            else:
+                print("Number of pieces used: ", self.numPieces)
+                print("Number of rows cleared: ", self.rowsCleared)
+                break
 
             self.render()
 
@@ -323,9 +331,11 @@ class TetrisApp(object):
 
     def runSequenceNoGUI(self, sequence):
         self.board = new_board()
+        for i in range(len(sequence)-1):
+            pieceType = sequence[i]
+            nextPiece = sequence[i+1]
 
-        for pieceType in sequence:
             if not self.gameover:
-                self.makeMove(pieceType)
+                self.makeMove(pieceType, nextPiece)
 
         return self.rowsCleared
