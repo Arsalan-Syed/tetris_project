@@ -13,7 +13,7 @@ def main():
         App.run()
     else:
         sequences = fh.loadSequences("sequences/test1.txt")
-        App.runSequence(sequences[0])
+        print(App.runSequence(sequences[0]))
 
 
 if __name__ == '__main__':

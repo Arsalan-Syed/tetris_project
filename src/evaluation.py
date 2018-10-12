@@ -13,15 +13,12 @@ other local search algorithms
 def fitness(weights):
     filename = "../sequences/test1.txt"
     score = 0
+    limit = 1000 # TODO change if needed
 
     sequences = filehandler.loadSequences(filename)
     for sequence in sequences:
         App = TetrisApp(False, weights)
-        score += App.runSequenceNoGUI(sequence)
-        print(score)
+        score += App.runSequenceNoGUI(sequence[0:limit])
 
     return np.floor(score / len(sequences))
 
-
-# Default, note 1000 total pieces used in test1.txt
-print(fitness([1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]))
