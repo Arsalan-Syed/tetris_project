@@ -20,30 +20,37 @@ def evaluate(board, weights=defaultWeights):
     evalboard = copy.copy(list(reversed(board[0:height])))
 
     # Remove full rows
-    clearedRows = 0
-    while True:
-        for h in range(height):
-            if 0 not in evalboard[h]:
-                del evalboard[h]
-                evalboard = copy.copy(evalboard + [[0]*width])
-                clearedRows += 1
-                break
-        else:
-            break
+    fullRows = []
+    for h in reversed(range(height)):
+        if 0 not in evalboard[h]:
+            fullRows.append(h)
+
+    clearedRows = len(fullRows)
+    for h in fullRows:
+        del evalboard[h]
+        evalboard.append([0] * width)
 
     # Extract height of each column
-    columnHeight = [0]*width
+    columnHeight = [0] * width
+    # Extract all the holes while we're at it
+    holes = 0
     for c in range(width):
-        h = height-1
-        while h > 0:
+        h = height - 1
+        while h >= 0:
             if evalboard[h][c] != 0:
+                # Set to h + 1 since we convert from zero-index to one-index
+                columnHeight[c] = h + 1
                 break
             h -= 1
-        # Set to h + 1 since we convert from zero-index to one-index
-        columnHeight[c] = h+1
+        while h >= 0:
+            if evalboard[h][c] == 0:
+                holes += 1
+            h -= 1
+
     # Get the max height as well
     maxHeight = max(columnHeight)
 
+    '''
     # Get the largest consecutive row of cells for each row
     rowContinuity = [0]*height
     for h in range(height):
@@ -57,10 +64,12 @@ def evaluate(board, weights=defaultWeights):
                 consecutiveLength = 0
         rowContinuity[h] = max(rowContinuity[h], consecutiveLength)
     maxContinuity = max(rowContinuity)
+    '''
+    rowContinuity = [0]
+    maxContinuity = 0
 
     # Holes
-    numberOfHoles = min(holes_v1(evalboard, width, maxHeight),
-                        holes_v2(evalboard, width, maxHeight))
+    numberOfHoles = holes
 
     # Bumpiness
     bumpiness = 0
@@ -71,16 +80,13 @@ def evaluate(board, weights=defaultWeights):
     avgHeight = sum(columnHeight) / width
 
     # Average continuity
-    avgContinuity = sum(rowContinuity) / maxHeight
+    avgContinuity = 0 #sum(rowContinuity) / maxHeight
 
     # Full lines
     fullLines = numberOfFullLines(board)
 
-    # Lose penalty
-    losePenalty = getIsLoss(board)
-
     # Calculate the heuristic score!
-    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2] + fullLines * weights[7])
+    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2] + fullLines * -1)
     score -= (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
     return score
 

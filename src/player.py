@@ -6,30 +6,6 @@ import src.heuristic as heuristic
 from src.helper import *
 
 
-def remove_duplicate_states(states):
-    possible_states = {}
-    for state in states:
-        possible_states[hash(str(state))] = state
-
-    return list(possible_states.values())
-
-
-def add_piece(board, piece, coord):
-    off_x, off_y = coord
-    for cy, row in enumerate(piece):
-        for cx, val in enumerate(row):
-            board[cy + off_y - 1][cx + off_x] += val
-    return board
-
-
-def remove_piece(board, piece, coord):
-    off_x, off_y = coord
-    for cy, row in enumerate(piece):
-        for cx, val in enumerate(row):
-            board[cy + off_y - 1][cx + off_x] -= val
-    return board
-
-
 class Player(object):
 
     def __init__(self, weights):
@@ -44,7 +20,17 @@ class Player(object):
     returns the new state of the board once currentPiece is placed
     '''
 
-    def play(self, board, current_piece, current_piece_type):
+    def play(self, board, pieces, piece_types):
+        x, y, rot, _ = self.bestMove(board, pieces, piece_types)
+        piece = pieces[0]
+        for i in range(rot):
+            piece = rotate_clockwise(piece)
+
+        return add_piece(board, piece, (x, y))
+
+    def bestMove(self, board, pieces, piece_types):
+        current_piece = pieces[0]
+        current_piece_type = piece_types[0]
         new_states = self.getPossibleNextStates(board, current_piece, current_piece_type)
 
         piece_rotations = [current_piece]
@@ -57,7 +43,11 @@ class Player(object):
         for new_state in new_states:
             (x, y, rot) = new_state
             add_piece(board, piece_rotations[rot], (x, y))
-            value = heuristic.evaluate(board, self.weights)
+
+            if len(pieces) > 1:
+                _, _, _, value = self.bestMove(board, pieces[1:], piece_types[1:])
+            else:
+                value = heuristic.evaluate(board, self.weights)
 
             if value > best_evaluation:
                 best_evaluation = value
@@ -65,8 +55,8 @@ class Player(object):
 
             remove_piece(board, piece_rotations[rot], (x, y))
 
-        (x, y, rot) = best_state
-        return add_piece(board, piece_rotations[rot], (x, y))
+        x, y, rot = best_state
+        return (x, y, rot, best_evaluation)
 
     '''
     Return all possible board states as a list 

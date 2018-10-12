@@ -1,5 +1,20 @@
 import numpy as np
 
+def add_piece(board, piece, coord):
+    off_x, off_y = coord
+    for cy, row in enumerate(piece):
+        for cx, val in enumerate(row):
+            board[cy + off_y - 1][cx + off_x] += val
+    return board
+
+
+def remove_piece(board, piece, coord):
+    off_x, off_y = coord
+    for cy, row in enumerate(piece):
+        for cx, val in enumerate(row):
+            board[cy + off_y - 1][cx + off_x] -= val
+    return board
+
 def rotate_clockwise(shape):
     return [[shape[y][x]
              for y in range(len(shape))]

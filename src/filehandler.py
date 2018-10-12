@@ -20,7 +20,7 @@ def writeToFile(filename, array):
 def saveSequences(numberOfLines, sequenceLength):
     for i in range(numberOfLines):
         pieces = generatePieces(sequenceLength)
-        writeToFile("../sequences/test1.txt", pieces)
+        writeToFile("../sequences/test2.txt", pieces)
 
 
 def loadSequences(filename):
@@ -36,4 +36,3 @@ def loadSequences(filename):
         result.append([int(x) for x in textSplit])
 
     return result
-

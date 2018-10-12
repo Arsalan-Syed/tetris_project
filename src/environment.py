@@ -240,7 +240,8 @@ class TetrisApp(object):
 
     def makeMove(self, pieceType, nextPieceType):
         self.new_stone_from_sequence(pieceType, nextPieceType)
-        self.board = self.player.play(self.board, self.stone, pieceType)
+        #self.board = self.player.play(self.board, [self.stone], [pieceType])
+        self.board = self.player.play(self.board, [self.stone,self.nextStone], [pieceType, nextPieceType])
 
         while True:
             for i, row in enumerate(self.board[:-1]):
@@ -271,7 +272,7 @@ class TetrisApp(object):
 
             if not self.gameover:
                 # Get the next move from the player
-                self.board = self.player.play(self.board, self.stone)
+                self.board = self.player.bestMove(self.board, self.stone)
                 self.new_stone()
                 while True:
                     for i, row in enumerate(self.board[:-1]):
@@ -308,8 +309,10 @@ class TetrisApp(object):
         self.board = new_board()
 
         while 1:
-            if not self.gameover and (pieceNumber < len(sequence)):
+            if not self.gameover and (pieceNumber < len(sequence)-1):
                 self.makeMove(sequence[pieceNumber], sequence[pieceNumber+1])
+            else:
+                break
 
             self.render()
 
