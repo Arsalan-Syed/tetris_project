@@ -83,10 +83,10 @@ def evaluate(board, weights=defaultWeights):
     avgContinuity = 0 #sum(rowContinuity) / maxHeight
 
     # Full lines
-    fullLines = numberOfFullLines(board)
+    fullLines = 0 #numberOfFullLines(board)
 
     # Calculate the heuristic score!
-    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2] + fullLines * -1)
+    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2])
     score -= (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
     return score
 

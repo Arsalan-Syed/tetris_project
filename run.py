@@ -12,7 +12,7 @@ def main():
     if random:
         App.run()
     else:
-        sequences = fh.loadSequences("sequences/test1.txt")
+        sequences = fh.loadSequences("sequences/test2.txt")
         print(App.runSequence(sequences[0]))
 
 

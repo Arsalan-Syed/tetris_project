@@ -92,7 +92,7 @@ def new_board():
 
 
 class TetrisApp(object):
-    defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0, 1.0]
+    defaultWeights = [1.0, 1.0, 4.0, 2.0, 1.0, 1.0, 1.0, 1.0]
 
     def __init__(self, useGUI, weights=defaultWeights):
         if useGUI:
@@ -312,6 +312,8 @@ class TetrisApp(object):
             if not self.gameover and (pieceNumber < len(sequence)-1):
                 self.makeMove(sequence[pieceNumber], sequence[pieceNumber+1])
             else:
+                print("Number of pieces used: ", self.numPieces)
+                print("Number of rows cleared: ", self.rowsCleared)
                 break
 
             self.render()
