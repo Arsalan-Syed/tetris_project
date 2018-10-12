@@ -80,7 +80,8 @@ def evaluate(board, weights=defaultWeights):
     losePenalty = getIsLoss(board)
 
     # Calculate the heuristic score!
-    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2]) - (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6] + fullLines * weights[7])
+    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2] + fullLines * weights[7])
+    score -= (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
     return score
 
 '''

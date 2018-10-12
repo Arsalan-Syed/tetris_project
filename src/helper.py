@@ -1,4 +1,4 @@
-import copy
+import numpy as np
 
 def rotate_clockwise(shape):
     return [[shape[y][x]
@@ -11,7 +11,7 @@ def getMaxWidth(piece):
 
 
 def join_matrixes(mat1, mat2, mat2_off):
-    result = copy.deepcopy(mat1)
+    result = mat1.copy()
     off_x, off_y = mat2_off
     for cy, row in enumerate(mat2):
         for cx, val in enumerate(row):

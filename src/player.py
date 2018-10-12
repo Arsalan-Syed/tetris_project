@@ -13,6 +13,23 @@ def remove_duplicate_states(states):
 
     return list(possible_states.values())
 
+
+def add_piece(board, piece, coord):
+    off_x, off_y = coord
+    for cy, row in enumerate(piece):
+        for cx, val in enumerate(row):
+            board[cy + off_y - 1][cx + off_x] += val
+    return board
+
+
+def remove_piece(board, piece, coord):
+    off_x, off_y = coord
+    for cy, row in enumerate(piece):
+        for cx, val in enumerate(row):
+            board[cy + off_y - 1][cx + off_x] -= val
+    return board
+
+
 class Player(object):
 
     def __init__(self, weights):
@@ -26,56 +43,59 @@ class Player(object):
     
     returns the new state of the board once currentPiece is placed
     '''
-    def play(self, board, currentPiece, nextPiece=None):
 
-        bestValue = -10000000
-        for neighbour in self.getPossibleNextStates(board, currentPiece):
+    def play(self, board, current_piece, current_piece_type):
+        new_states = self.getPossibleNextStates(board, current_piece, current_piece_type)
 
-            # If we know the next piece, we can expand this neighbour in our game tree
-            if nextPiece is not None:
-                bestNextValue = -10000000
-                for nextStateNeighbour in self.getPossibleNextStates(neighbour, nextPiece):
-                    value = heuristic.evaluate(nextStateNeighbour, self.weights)
-                    if value > bestNextValue:
-                        bestNextValue = value
+        piece_rotations = [current_piece]
+        for i in range(3):
+            piece_rotations.append(rotate_clockwise(piece_rotations[-1]))
 
-                if bestNextValue > bestValue:
-                    bestValue = bestNextValue
-                    bestState = neighbour
+        best_state = None
+        best_evaluation = -100000000
 
-            # We just evaluate this neighbour
-            else:
-                value = heuristic.evaluate(neighbour, self.weights)
-                if value > bestValue:
-                    bestValue = value
-                    bestState = neighbour
+        for new_state in new_states:
+            (x, y, rot) = new_state
+            add_piece(board, piece_rotations[rot], (x, y))
+            value = heuristic.evaluate(board, self.weights)
 
-        return bestState
+            if value > best_evaluation:
+                best_evaluation = value
+                best_state = new_state
+
+            remove_piece(board, piece_rotations[rot], (x, y))
+
+        (x, y, rot) = best_state
+        return add_piece(board, piece_rotations[rot], (x, y))
 
     '''
     Return all possible board states as a list 
     of 2d arrays
     '''
 
-    def getPossibleNextStates(self, board, current_piece):
-        possible_states = []
+    def getPossibleNextStates(self, board, current_piece, current_piece_type):
+        new_states = []
 
-        current_piece_copy = current_piece.copy()
+        numRotations = 4
+
+        if current_piece_type == 6:
+            numRotations = 1
+        elif current_piece_type in [1, 2, 5]:
+            numRotations = 2
 
         # Each iteration represents a 90 degree rotation
-        for i in range(4):
-            width = getMaxWidth(current_piece_copy)
+        for rotation in range(numRotations):
+            width = getMaxWidth(current_piece)
             possible_x_placements = 11 - width
 
             # For each possible x position, we let the piece fall straight down
             for x in range(possible_x_placements):
                 y = 0
-                while not check_collision(board, current_piece_copy, (x, y)):
+                while not check_collision(board, current_piece, (x, y)):
                     y += 1
 
-                possible_states.append(join_matrixes(board, current_piece_copy, (x, y)))
+                new_states.append((x, y, rotation))
 
-            current_piece_copy = rotate_clockwise(current_piece_copy)
+            current_piece = rotate_clockwise(current_piece)
 
-        return remove_duplicate_states(possible_states)
-
+        return new_states
