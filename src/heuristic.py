@@ -73,7 +73,9 @@ def evaluate(board, w=defaultWeights):
     avgContinuity = sum(rowContinuity) / maxHeight
 
     # Calculate the heuristic score!
-    score = (avgContinuity*w[0] + maxContinuity*w[1] + clearedRows*w[2]) - (numberOfHoles*w[3] + avgHeight*w[4] + maxHeight*w[5] + bumpiness*w[6])
+    score = (avgContinuity*w[0] +
+             maxContinuity*w[1] +
+             clearedRows*w[2]) - (numberOfHoles*w[3] + avgHeight*w[4] + maxHeight*w[5] + bumpiness*w[6])
     return score
 
 
