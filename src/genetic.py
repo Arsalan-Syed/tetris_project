@@ -68,11 +68,14 @@ def mate(parent1, parent2):
     child_code2 = mutate(code2[:i] + code1[i:])
     return child_code1, child_code2
 
-def breed_population(pop, fit_fun):
+def breed_population(pop, fit_fun, higher_better):
     n = len(pop)
     # Many possibilities here. Elitist selection: take the 10% best
     # and only breed on them:
-    pop = list(sorted(pop))[:len(pop)//10]
+    pop = sorted(pop)
+    if higher_better:
+        pop = list(reverse(pop))
+    pop = pop[:len(pop)//10]
     # Roulette wheel section based on probabilities. Doesn't seem to
     # converge as quickly.
     # fits = [p[0] for p in pop]
@@ -102,24 +105,26 @@ def breed_population(pop, fit_fun):
     return pop2
 
 # Prints some data about the generation.
-def generation_stats(pop):
+def generation_stats(gen, pop):
     i, v = min_index(pop)
     fits = [p[0] for p in pop]
-    fmt = '{:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} {!s:<23}'
-    print(fmt.format(min(fits), mean(fits), max(fits), stdev(fits), v[1]))
+    fmt = '{:>3} {:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} {!s:<23}'
+    print(fmt.format(gen, min(fits), mean(fits), max(fits), stdev(fits), v[1]))
 
-def run_evolution(forefather, fitness, n):
+def run_evolution(forefather, fitness, n, higher_better):
+    fmt = '* Running evolution with population size {0}, {1} scores better.'
+    s = 'higher' if higher_better else 'lower'
+    print(fmt.format(n, s))
     pop = list(create_population(n, forefather, fitness))
     for gen in range(1000):
-        pop = breed_population(pop, fitness)
-        if gen % 500:
-            generation_stats(pop)
+        generation_stats(gen, pop)
+        pop = breed_population(pop, fitness, higher_better)
 
 def evolve_tetris():
     from evaluation import fitness
     def forefather():
         return [random() * 10 for _ in range(8)]
-    run_evolution(forefather, fitness, 100)
+    run_evolution(forefather, fitness, 100, True)
 
 def evolve_polynomial():
     # Function for generating a forefather, a chromosome with no parent.
@@ -133,13 +138,13 @@ def evolve_polynomial():
         return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
 
     # Dummy fitness function. Calculates how well the chromosome
-    # approximates the poynomial 4x^4 - 2x^3 + 3x^2 + x - 4
+    # approximates the polynomial 4x^4 - 2x^3 + 3x^2 + x - 4
     def fitness(ch):
         w = (4, -2, 3, 1, -4)
         xs = [randint(-100, 100) for _ in range(100)]
         xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
         return mean(xs)
-    run_evolution(forefather, fitness, 5000)
+    run_evolution(forefather, fitness, 5000, False)
 
 if __name__ == '__main__':
     #evolve_polynomial()
