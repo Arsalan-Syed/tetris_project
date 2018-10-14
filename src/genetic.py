@@ -3,7 +3,8 @@
 #  l: size of chromosome
 from bisect import bisect
 from itertools import accumulate
-from random import randint, random
+from random import randint, random, randrange
+from statistics import mean, stdev
 from sys import exit
 import numpy
 
@@ -37,11 +38,11 @@ def min_index(l):
     return min(enumerate(l), key = lambda x: x[1])
 
 ########################################################################
-# Domain specific functions
+# Domain specific functions and classes
 ########################################################################
 # Function for generating a forefather, a chromosome with no parent.
 def forefather():
-    v = 100
+    v = 10
     return tuple([randint(-v, v) for _ in range(5)])
 
 # To determine how close a chromosome comes to a polynomial.
@@ -50,18 +51,18 @@ def p(ch, x):
     return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
 
 # Dummy fitness function. Calculates how well the chromosome
-# approximates the poynomial 4x^4 - 2x^3 + 20x^2 + x - 40
+# approximates the poynomial 4x^4 - 2x^3 + 3x^2 + x - 4
 def fitness(ch):
     w = (4, -2, 3, 1, -4)
     xs = [randint(-100, 100) for _ in range(10)]
-    tss = sum((p(w, x) - p(ch, x))**2 for x in xs)
-    return tss / len(xs)
+    xs = [abs(p(w, x) - p(ch, x))**4 for x in xs]
+    return mean(xs)
 
 ########################################################################
 # Genetic algorithm functions
 ########################################################################
-# Computes fitness for each individual.
 def population_fitness(pop, fit_fun):
+    '''Computes fitness for each individual.'''
     fits = [fit_fun(p) for p in pop]
     worst = max(fits)
     fits = [worst - fit for fit in fits]
@@ -69,38 +70,61 @@ def population_fitness(pop, fit_fun):
     return [f / tot for f in fits]
 
 def create_population(n, gen_fun, fit_fun):
-    pop = [gen_fun() for _ in range(n)]
-    return pop, population_fitness(pop, fit_fun)
+    for _ in range(n):
+        ch = gen_fun()
+        yield fit_fun(ch), ch
 
 def mutate(ch):
     if randint(0, 100) == 100:
-        idx = randint(0, len(ch) - 1)
-        l, at, r = ch[:idx], ch[idx], ch[idx+1:]
-        return l + (at + randint(-2, 2),) + r
+        ch = list(ch)
+        ch[randrange(0, len(ch))] += randint(-2, 2)
+        ch = tuple(ch)
     return ch
 
-# Perform mating of two chromosomes
-def mate(pop, fits):
-    while True:
-        p1, p2 = choices(pop, fits, k = 2)
-        if p1 != p2:
-            break
-    i = randint(0, len(p1))
-    c1 = p1[:i] + p2[i:]
-    c2 = p2[:i] + p1[i:]
-    c1 = mutate(c1)
-    c2 = mutate(c2)
-    return [c1, c2]
+# Two chromosomes get down and dirty
+def mate(parent1, parent2):
+    i = randint(0, len(parent1))
+    code1, code2 = parent1[1], parent2[1]
+    child_code1 = mutate(code1[:i] + code2[i:])
+    child_code2 = mutate(code2[:i] + code1[i:])
+    return child_code1, child_code2
+
+def breed_population(pop, fit_fun):
+    # We take the raw fitness values and converts them to
+    # probabilities.
+    fits = [p[0] for p in pop]
+    worst = max(fits)
+    fits = [worst - fit for fit in fits]
+    tot = sum(fits)
+    probs = [fit / tot for fit in fits]
+    pop2 = []
+
+    while len(pop2) < len(pop):
+        # Find two individuals, based on their fitness probability
+        while True:
+            p1, p2 = choices(pop, probs, k = 2)
+            if p1 != p2:
+                break
+        c1, c2 = mate(p1, p2)
+        # Calculate their fitness and insert them in the new
+        # population.
+        pop2.append((fit_fun(c1), c1))
+        pop2.append((fit_fun(c2), c2))
+        # Also insert their parents
+        pop2.append(p1)
+        pop2.append(p2)
+    return pop2
+
+# Prints some data about the generation.
+def generation_stats(pop):
+    i, v = min_index(pop)
+    fits = [p[0] for p in pop]
+    fmt = '{:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} {!s:<23}'
+    print(fmt.format(min(fits), mean(fits), max(fits), stdev(fits), v[1]))
 
 if __name__ == '__main__':
-    pop, fits = create_population(100, forefather, fitness)
-    for gen in range(10000):
-        pop2 = []
-        while len(pop2) < len(pop):
-            pop2.extend(mate(pop, fits))
-        pop = pop2
-        fits = population_fitness(pop, fitness)
-        i, v = max_index(fits)
-        if gen % 100 == 0:
-            fmt = '{:>3} {:.6f} {!s:<23} {:>22.3f}'
-            print(fmt.format(i, v, pop[i], fitness(pop[i])))
+    pop = list(create_population(5000, forefather, fitness))
+    for gen in range(1000):
+        pop = breed_population(pop, fitness)
+        if gen % 500:
+            generation_stats(pop)
