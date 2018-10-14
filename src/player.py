@@ -28,7 +28,7 @@ class Player(object):
 
         return add_piece(board, piece, (x, y))
 
-    def bestMove(self, board, pieces, piece_types):
+    def bestMove(self, board, pieces, piece_types, cleared_rows=0):
         current_piece = pieces[0]
         current_piece_type = piece_types[0]
         new_states = self.getPossibleNextStates(board, current_piece, current_piece_type)
@@ -43,16 +43,20 @@ class Player(object):
         for new_state in new_states:
             (x, y, rot) = new_state
             add_piece(board, piece_rotations[rot], (x, y))
+            board, full_rows = remove_full_rows(board)
+
+            new_cleared_rows = cleared_rows + len(full_rows)
 
             if len(pieces) > 1:
-                _, _, _, value = self.bestMove(board, pieces[1:], piece_types[1:])
+                _, _, _, value = self.bestMove(board, pieces[1:], piece_types[1:], new_cleared_rows)
             else:
-                value = heuristic.evaluate(board, self.weights)
+                value = heuristic.evaluate(board, self.weights, new_cleared_rows)
 
             if value > best_evaluation:
                 best_evaluation = value
                 best_state = new_state
 
+            board = insert_rows(board, full_rows)
             remove_piece(board, piece_rotations[rot], (x, y))
 
         x, y, rot = best_state

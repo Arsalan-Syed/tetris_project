@@ -13,22 +13,11 @@ def print_board(board):
 defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
 
 
-def evaluate(board, weights=defaultWeights):
+def evaluate(board, weights=defaultWeights, clearedRows=0):
     # Extract height and width and create a board that is more suitable for evaluation
     height = len(board) - 1
     width = len(board[0])
     evalboard = copy.copy(list(reversed(board[0:height])))
-
-    # Remove full rows
-    fullRows = []
-    for h in reversed(range(height)):
-        if 0 not in evalboard[h]:
-            fullRows.append(h)
-
-    clearedRows = len(fullRows)
-    for h in fullRows:
-        del evalboard[h]
-        evalboard.append([0] * width)
 
     # Extract height of each column
     columnHeight = [0] * width

@@ -1,4 +1,4 @@
-import numpy as np
+import copy
 
 def add_piece(board, piece, coord):
     off_x, off_y = coord
@@ -15,6 +15,24 @@ def remove_piece(board, piece, coord):
             board[cy + off_y - 1][cx + off_x] -= val
     return board
 
+def remove_full_rows(board):
+    rows = []
+    new_board = copy.copy(board)
+    height = len(new_board) - 1
+    width = len(new_board[0])
+    for h in range(height):
+        if 0 not in new_board[h]:
+            rows.append((h, new_board.pop(h)))
+            new_board = [[0]*width] + new_board
+
+    return (new_board, rows)
+
+def insert_rows(board, rows):
+    new_board = copy.copy(board[len(rows):])
+    for h, row in rows:
+        new_board.insert(h, row)
+    return new_board
+
 def rotate_clockwise(shape):
     return [[shape[y][x]
              for y in range(len(shape))]
@@ -26,7 +44,7 @@ def getMaxWidth(piece):
 
 
 def join_matrixes(mat1, mat2, mat2_off):
-    result = mat1.copy()
+    result = copy.copy(mat1)
     off_x, off_y = mat2_off
     for cy, row in enumerate(mat2):
         for cx, val in enumerate(row):

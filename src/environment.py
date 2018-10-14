@@ -35,7 +35,6 @@
 import pygame
 from random import choice
 import sys
-import numpy as np
 
 from src.player import Player
 from src.helper import *
@@ -88,7 +87,7 @@ def new_board():
     board = [[0 for x in range(config['cols'])]
              for y in range(config['rows'])]
     board += [[1 for x in range(config['cols'])]]
-    return np.array(board)
+    return board
 
 
 class TetrisApp(object):
@@ -195,10 +194,8 @@ class TetrisApp(object):
         sys.exit()
 
     def remove_row(self, board, row):
-        board = np.delete(board, row, axis=0)
-        self.rowsCleared += 1
-        newRow = np.array([0 for i in range(config['cols'])])
-        return np.vstack((newRow, board))
+        del board[row]
+        return [[0 for i in range(config['cols'])]] + board
 
     def rotate_stone(self):
         if not self.gameover and not self.paused:
