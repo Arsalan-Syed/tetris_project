@@ -72,15 +72,6 @@ def create_population(n, gen_fun, fit_fun):
     pop = [gen_fun() for _ in range(n)]
     return pop, population_fitness(pop, fit_fun)
 
-def offsprint_of_two(individual1, individual2):
-    where_to_split = random.randint(0, len(individual1))
-    offsprings = []
-    offsprings.append(individual1[:where_to_split] +
-                      individual2[where_to_split:])
-    offsprints.append(individual2[:where_to_split] +
-                      individual1[where_to_split:])
-    return offsprints
-
 def mutate(ch):
     if randint(0, 100) == 100:
         idx = randint(0, len(ch) - 1)
@@ -100,35 +91,6 @@ def mate(pop, fits):
     c1 = mutate(c1)
     c2 = mutate(c2)
     return [c1, c2]
-
-def select(individuals, select_this_many):
-    objective_values = [fitness(element) for element in individuals]
-    probabilities = [objective_values[i]/sum(objective_values)
-                     for i in range(len(objective_values))]
-    chosen_indexes = list(numpy.random.choice(range(len(individuals)),
-                                              select_this_many,
-                                              False,
-                                              probabilities))
-    return [individuals[i] for i in chosen_indexes]
-
-def optimize_it():
-    # create 20 integer lists each having 5 elements and the elements
-    # are from 1 to 10
-    individuals = create_population(20, forefather)
-    best_objective_value = 99999
-    iteration = 0
-    index_of_it = None
-    while best_objective_value > 1000 and iteration < 100:
-        individuals = select(individuals)
-        # yet to be done
-        individuals = create_offspring(individuals)
-        # yet to be done
-        individuals = mutate(individuals)
-
-        #yet to be done
-        best_objective_value, index_of_it = \
-            compute_best_objective_value(individuals)
-        iteration +=1
 
 if __name__ == '__main__':
     pop, fits = create_population(100, forefather, fitness)
