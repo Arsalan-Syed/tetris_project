@@ -281,7 +281,6 @@ class TetrisApp(object):
                         if 0 not in row:
                             self.board = self.remove_row(
                                 self.board, i)
-                            self.rowsCleared += 1
                             break
                     else:
                         break
