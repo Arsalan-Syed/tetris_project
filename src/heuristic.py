@@ -75,7 +75,7 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
     fullLines = 0 #numberOfFullLines(board)
 
     # Calculate the heuristic score!
-    score = (avgContinuity * weights[0] + maxContinuity * weights[1] + clearedRows * weights[2])
+    score = (clearedRows * clearedRows * weights[2])
     score -= (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
     return score
 

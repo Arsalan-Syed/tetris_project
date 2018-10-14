@@ -239,7 +239,7 @@ class TetrisApp(object):
     def makeMove(self, pieceType, nextPieceType):
         self.new_stone_from_sequence(pieceType, nextPieceType)
         #self.board = self.player.play(self.board, [self.stone], [pieceType])
-        self.board = self.player.play(self.board, [self.stone,self.nextStone], [pieceType, nextPieceType])
+        self.board = self.player.play(self.board, [self.stone, self.nextStone], [pieceType, nextPieceType])
 
         while True:
             for i, row in enumerate(self.board[:-1]):
@@ -265,13 +265,17 @@ class TetrisApp(object):
         self.board = new_board()
         self.new_stone()
 
+        prev_count = 0
+
         while 1:
             self.render()
 
             if not self.gameover:
-                # Get the next move from the player
-                self.board = self.player.bestMove(self.board, self.stone)
+                # Keep track of the old stone and generate the next stone
+                old_stone = self.stone
                 self.new_stone()
+                # Get the next move from the player
+                self.board = self.player.play(self.board, [old_stone, self.stone])
                 while True:
                     for i, row in enumerate(self.board[:-1]):
                         if 0 not in row:
@@ -281,6 +285,14 @@ class TetrisApp(object):
                             break
                     else:
                         break
+
+            if (self.numPieces % 1000 == 0) and (prev_count != self.numPieces):
+                prev_count = self.numPieces
+                print("----- STATUS UPDATE -----")
+                print("Number of pieces used: ", self.numPieces)
+                print("Number of rows cleared: ", self.rowsCleared)
+                print("")
+
 
             pygame.time.delay(config['delay'])
 

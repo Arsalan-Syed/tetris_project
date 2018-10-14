@@ -4,7 +4,7 @@ import src.environment as env
 import src.filehandler as fh
 
 def main():
-    random = False
+    random = True
     useGUI = True
 
     App = env.TetrisApp(useGUI)

@@ -20,7 +20,10 @@ class Player(object):
     returns the new state of the board once currentPiece is placed
     '''
 
-    def play(self, board, pieces, piece_types):
+    def play(self, board, pieces, piece_types=None):
+        if piece_types is None:
+            piece_types = [(max([max(row) for row in p]) - 1) for p in pieces]
+
         x, y, rot, _ = self.bestMove(board, pieces, piece_types)
         piece = pieces[0]
         for i in range(rot):

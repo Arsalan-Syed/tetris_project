@@ -44,7 +44,7 @@ def getMaxWidth(piece):
 
 
 def join_matrixes(mat1, mat2, mat2_off):
-    result = copy.copy(mat1)
+    result = copy.deepcopy(mat1)
     off_x, off_y = mat2_off
     for cy, row in enumerate(mat2):
         for cx, val in enumerate(row):
