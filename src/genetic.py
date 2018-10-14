@@ -1,10 +1,31 @@
 # ch: Chromosome
 #  n: size of population
 #  l: size of chromosome
-from random import choices, randint
+from bisect import bisect
+from itertools import accumulate
+from random import randint, random
 from sys import exit
-import random
 import numpy
+
+def choices(population, weights=None, *, cum_weights=None, k=1):
+    """Return a k sized list of population elements chosen with replacement.
+    If the relative weights or cumulative weights are not specified,
+    the selections are made with equal probability.
+    """
+    n = len(population)
+    if cum_weights is None:
+        if weights is None:
+            _int = int
+            return [population[_int(random() * n)] for i in range(k)]
+        cum_weights = list(accumulate(weights))
+    elif weights is not None:
+        raise TypeError('Cannot specify both weights and cumulative weights')
+    if len(cum_weights) != n:
+        raise ValueError('The number of weights does not match the population')
+    total = cum_weights[-1]
+    hi = n - 1
+    return [population[bisect(cum_weights, random() * total, 0, hi)]
+            for i in range(k)]
 
 ########################################################################
 # Utility
