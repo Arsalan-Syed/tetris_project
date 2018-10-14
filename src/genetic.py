@@ -42,8 +42,8 @@ def min_index(l):
 ########################################################################
 # Function for generating a forefather, a chromosome with no parent.
 def forefather():
-    v = 10
-    return tuple([randint(-v, v) for _ in range(5)])
+    v = 1000
+    return [randint(-v, v) for _ in range(5)]
 
 # To determine how close a chromosome comes to a polynomial.
 def p(ch, x):
@@ -54,8 +54,8 @@ def p(ch, x):
 # approximates the poynomial 4x^4 - 2x^3 + 3x^2 + x - 4
 def fitness(ch):
     w = (4, -2, 3, 1, -4)
-    xs = [randint(-100, 100) for _ in range(10)]
-    xs = [abs(p(w, x) - p(ch, x))**4 for x in xs]
+    xs = [randint(-100, 100) for _ in range(100)]
+    xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
     return mean(xs)
 
 ########################################################################
@@ -75,10 +75,10 @@ def create_population(n, gen_fun, fit_fun):
         yield fit_fun(ch), ch
 
 def mutate(ch):
-    if randint(0, 100) == 100:
-        ch = list(ch)
-        ch[randrange(0, len(ch))] += randint(-2, 2)
-        ch = tuple(ch)
+    v = 10
+    for i in range(len(ch)):
+        if randrange(0, 50) == 0:
+            ch[i] += randint(-v, v)
     return ch
 
 # Two chromosomes get down and dirty
@@ -90,29 +90,39 @@ def mate(parent1, parent2):
     return child_code1, child_code2
 
 def breed_population(pop, fit_fun):
-    # We take the raw fitness values and converts them to
-    # probabilities.
-    fits = [p[0] for p in pop]
-    worst = max(fits)
-    fits = [worst - fit for fit in fits]
-    tot = sum(fits)
-    probs = [fit / tot for fit in fits]
+
+    n = len(pop)
+    # Many possibilities here. Elitist selection: take the 10% best
+    # and only breed on them:
+    pop = list(sorted(pop))[:len(pop)//10]
+
+
+    # Roulette wheel section based on probabilities. Doesn't seem to
+    # converge as quickly.
+    # fits = [p[0] for p in pop]
+    # worst = max(fits)
+    # fits = [worst - fit for fit in fits]
+    # tot = sum(fits)
+    # probs = [fit / tot for fit in fits]
     pop2 = []
 
-    while len(pop2) < len(pop):
+    while len(pop2) < n:
+        # Perhaps we can allow mating with itself because it is
+        # unlikely.
+        p1, p2 = choices(pop, k = 2)
         # Find two individuals, based on their fitness probability
-        while True:
-            p1, p2 = choices(pop, probs, k = 2)
-            if p1 != p2:
-                break
+        # for _ in range(20):
+        #     p1, p2 = choices(pop, k = 2) # , probs, k = 2)
+        #     if p1 != p2:
+        #         break
         c1, c2 = mate(p1, p2)
         # Calculate their fitness and insert them in the new
         # population.
         pop2.append((fit_fun(c1), c1))
         pop2.append((fit_fun(c2), c2))
         # Also insert their parents
-        pop2.append(p1)
-        pop2.append(p2)
+        # pop2.append((fit_fun(p1[1]), p1[1]))
+        # pop2.append((fit_fun(p2[1]), p2[1]))
     return pop2
 
 # Prints some data about the generation.
