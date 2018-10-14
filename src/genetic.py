@@ -38,27 +38,6 @@ def min_index(l):
     return min(enumerate(l), key = lambda x: x[1])
 
 ########################################################################
-# Domain specific functions and classes
-########################################################################
-# Function for generating a forefather, a chromosome with no parent.
-def forefather():
-    v = 1000
-    return [randint(-v, v) for _ in range(5)]
-
-# To determine how close a chromosome comes to a polynomial.
-def p(ch, x):
-    #return ch[0]*x + ch[1]*x + ch[2]*x + ch[3]*x + ch[4]*x
-    return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
-
-# Dummy fitness function. Calculates how well the chromosome
-# approximates the poynomial 4x^4 - 2x^3 + 3x^2 + x - 4
-def fitness(ch):
-    w = (4, -2, 3, 1, -4)
-    xs = [randint(-100, 100) for _ in range(100)]
-    xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
-    return mean(xs)
-
-########################################################################
 # Genetic algorithm functions
 ########################################################################
 def population_fitness(pop, fit_fun):
@@ -90,13 +69,10 @@ def mate(parent1, parent2):
     return child_code1, child_code2
 
 def breed_population(pop, fit_fun):
-
     n = len(pop)
     # Many possibilities here. Elitist selection: take the 10% best
     # and only breed on them:
     pop = list(sorted(pop))[:len(pop)//10]
-
-
     # Roulette wheel section based on probabilities. Doesn't seem to
     # converge as quickly.
     # fits = [p[0] for p in pop]
@@ -132,9 +108,39 @@ def generation_stats(pop):
     fmt = '{:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} {!s:<23}'
     print(fmt.format(min(fits), mean(fits), max(fits), stdev(fits), v[1]))
 
-if __name__ == '__main__':
-    pop = list(create_population(5000, forefather, fitness))
+def run_evolution(forefather, fitness, n):
+    pop = list(create_population(n, forefather, fitness))
     for gen in range(1000):
         pop = breed_population(pop, fitness)
         if gen % 500:
             generation_stats(pop)
+
+def evolve_tetris():
+    from evaluation import fitness
+    def forefather():
+        return [random() * 10 for _ in range(8)]
+    run_evolution(forefather, fitness, 100)
+
+def evolve_polynomial():
+    # Function for generating a forefather, a chromosome with no parent.
+    def forefather():
+        v = 1000
+        return [randint(-v, v) for _ in range(5)]
+
+    # To determine how close a chromosome comes to a polynomial.
+    def p(ch, x):
+        #return ch[0]*x + ch[1]*x + ch[2]*x + ch[3]*x + ch[4]*x
+        return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
+
+    # Dummy fitness function. Calculates how well the chromosome
+    # approximates the poynomial 4x^4 - 2x^3 + 3x^2 + x - 4
+    def fitness(ch):
+        w = (4, -2, 3, 1, -4)
+        xs = [randint(-100, 100) for _ in range(100)]
+        xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
+        return mean(xs)
+    run_evolution(forefather, fitness, 5000)
+
+if __name__ == '__main__':
+    #evolve_polynomial()
+    evolve_tetris()
