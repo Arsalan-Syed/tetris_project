@@ -195,6 +195,7 @@ class TetrisApp(object):
 
     def remove_row(self, board, row):
         del board[row]
+        self.rowsCleared += 1
         return [[0 for i in range(config['cols'])]] + board
 
     def rotate_stone(self):
