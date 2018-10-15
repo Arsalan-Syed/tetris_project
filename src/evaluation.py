@@ -1,6 +1,5 @@
-from math import floor
-from src import filehandler
 from src.environment import TetrisApp
+import random
 
 '''
 Determines how good an AI player is by making it play several games
@@ -10,14 +9,19 @@ other local search algorithms
 '''
 
 
-def fitness(weights):
-    filename = "../sequences/test1.txt"
-    score = 0
-    limit = 1000 # TODO change if needed
+def fitness(weights, sequence):
+    App = TetrisApp(False, weights)
+    return App.runSequenceNoGUI(sequence)
 
-    sequences = filehandler.loadSequences(filename)
-    for sequence in sequences:
-        App = TetrisApp(False, weights)
-        score += App.runSequenceNoGUI(sequence[0:limit])
 
-    return floor(score / len(sequences))
+def fitnessAverage(weights, sequenceLength, iterations):
+    scores = [0.0 for x in range(len(weights))]
+
+    for iter in range(iterations):
+        sequence = [random.randint(0, 6) for x in range(sequenceLength)]
+
+        # Try every on of the weights
+        for i in range(len(weights)):
+            scores[i] += fitness(weights[i], sequence)
+
+    return [score/iterations for score in scores]

@@ -1,5 +1,4 @@
 import itertools
-from src.helper import *
 from src.evaluation import *
 import random
 
@@ -17,7 +16,7 @@ def convert(x):
     return result
 
 
-def getWeightVectorNeighbours(weights, stepSize):
+def getWeightVectorNeighbours(weights, stepSize, sampleSize):
     weightIncrements = []
     chars = "012"
     count = len(weights)
@@ -26,30 +25,37 @@ def getWeightVectorNeighbours(weights, stepSize):
 
     neighbours = []
     for increment in weightIncrements:
-        delta = np.multiply(increment, stepSize)
-        neighbours.append(np.add(weights, delta))
+        delta = [x*stepSize for x in increment]
+        neighbour = weights.copy()
+        for i in range(len(delta)):
+            neighbour[i] += delta[i]
+            neighbours.append(neighbour)
 
-    sampleSize = 10
-    return random.sample(neighbours, sampleSize)
+    if len(neighbours) > sampleSize:
+        return random.sample(neighbours, sampleSize)
+    else:
+        return neighbours
 
-
-def hill_climb(weight_vector):
-    stepSize = 0.1
-    current_weights = copy.deepcopy(weight_vector)
+def hill_climb(weight_vector,stepSize,samepleSize, sequenceLength):
+    current_weights = weight_vector.copy()
+    sequence = [random.randint(0, 6) for x in range(sequenceLength)]
 
     while True:
         bestFitness = -10000000
         bestWeights = None
-        print(current_weights)
-        for neighbour in getWeightVectorNeighbours(current_weights, stepSize):
-            neighbourFitness = fitness(neighbour)
+
+        print(current_weights, fitness(current_weights,sequence))
+
+        for neighbour in getWeightVectorNeighbours(current_weights, stepSize, samepleSize):
+            neighbourFitness = fitness(neighbour,sequence)
             if neighbourFitness > bestFitness:
                 bestFitness = neighbourFitness
                 bestWeights = neighbour
 
-        if bestFitness <= fitness(current_weights):
+        if bestFitness <= fitness(current_weights,sequence):
+            print("Best: ",current_weights,fitness(current_weights,sequence))
             return current_weights
 
         current_weights = bestWeights
 
-hill_climb([1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0, 1.0])
+
