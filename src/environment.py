@@ -38,6 +38,7 @@ import sys
 
 from src.player import Player
 from src.helper import *
+import src.heuristic as heuristic
 
 # The configuration
 config = {
@@ -91,7 +92,7 @@ def new_board():
 
 
 class TetrisApp(object):
-    defaultWeights = [1.0, 1.0, 4.0, 2.0, 1.0, 1.0, 1.0, 1.0]
+    defaultWeights = heuristic.defaultWeights
 
     def __init__(self, useGUI, weights=defaultWeights):
         if useGUI:

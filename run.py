@@ -4,7 +4,7 @@ import src.environment as env
 import src.filehandler as fh
 
 def main():
-    random = True
+    random = False
     useGUI = True
 
     App = env.TetrisApp(useGUI)
@@ -12,7 +12,7 @@ def main():
     if random:
         App.run()
     else:
-        sequences = fh.loadSequences("sequences/test2.txt")
+        sequences = fh.loadSequences("sequences/test1.txt")
         print(App.runSequence(sequences[0]))
 
 

@@ -10,7 +10,7 @@ def print_board(board):
         print(row)
 
 
-defaultWeights = [1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 1.0]
+defaultWeights = [1.0, 4.0, -2.0, -1.0, -1.0, -1.0]
 
 
 def evaluate(board, weights=defaultWeights, clearedRows=0):
@@ -22,7 +22,7 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
     # Extract height of each column
     columnHeight = [0] * width
     # Extract all the holes while we're at it
-    holes = 0
+    numberOfHoles = 0
     for c in range(width):
         h = height - 1
         while h >= 0:
@@ -33,32 +33,11 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
             h -= 1
         while h >= 0:
             if evalboard[h][c] == 0:
-                holes += 1
+                numberOfHoles += 1
             h -= 1
 
     # Get the max height as well
     maxHeight = max(columnHeight)
-
-    '''
-    # Get the largest consecutive row of cells for each row
-    rowContinuity = [0]*height
-    for h in range(height):
-        isRow = False
-        consecutiveLength = 0
-        for c in range(width):
-            if evalboard[h][c] != 0:
-                consecutiveLength += 1
-            else:
-                rowContinuity[h] = max(rowContinuity[h], consecutiveLength)
-                consecutiveLength = 0
-        rowContinuity[h] = max(rowContinuity[h], consecutiveLength)
-    maxContinuity = max(rowContinuity)
-    '''
-    rowContinuity = [0]
-    maxContinuity = 0
-
-    # Holes
-    numberOfHoles = holes
 
     # Bumpiness
     bumpiness = 0
@@ -68,95 +47,12 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
     # Average height
     avgHeight = sum(columnHeight) / width
 
-    # Average continuity
-    avgContinuity = 0 #sum(rowContinuity) / maxHeight
-
-    # Full lines
-    fullLines = 0 #numberOfFullLines(board)
-
     # Calculate the heuristic score!
-    score = (clearedRows * clearedRows * weights[2])
-    score -= (numberOfHoles * weights[3] + avgHeight * weights[4] + maxHeight * weights[5] + bumpiness * weights[6])
+    score = 0
+    score += clearedRows * clearedRows * weights[0]
+    score += clearedRows * weights[1]
+    score += numberOfHoles * weights[2]
+    score += avgHeight * weights[3] 
+    score += maxHeight * weights[4]
+    score += bumpiness * weights[5]
     return score
-
-'''
-If a row is full, each element in the row must be non-zero
-'''
-def numberOfFullLines(board):
-    return len([row for row in board if np.count_nonzero(row) == len(row)])
-
-
-'''
-Returns true if the game state results in a loss
-'''
-# TODO
-def getIsLoss(board):
-    return sum(board[0]) > 0
-
-
-def holes_v1(board, width, maxHeight):
-    # Setup a boolean array (maxHeight x width) that says if something is a hole
-    # or not
-    isHole = [[]]*maxHeight
-    for h in range(maxHeight):
-        isHole[h] = [False]*width
-        for c in range(width):
-            if board[h][c] == 0:
-                isHole[h][c] = True
-
-    # Simple search for unmarking all the empty spaces that aren't holes
-    def unmark_neighbors(iHeight, iWidth, depth):
-        # Limit with a depth
-        if depth == 0:
-            return
-        if iWidth > 0:
-            if isHole[iHeight][iWidth - 1]:
-                isHole[iHeight][iWidth - 1] = False
-                unmark_neighbors(iHeight, iWidth - 1, depth - 1)
-        if iWidth < (width - 1):
-            if isHole[iHeight][iWidth + 1]:
-                isHole[iHeight][iWidth + 1] = False
-                unmark_neighbors(iHeight, iWidth + 1, depth - 1)
-        if iHeight > 0:
-            if isHole[iHeight - 1][iWidth]:
-                isHole[iHeight - 1][iWidth] = False
-                unmark_neighbors(iHeight - 1, iWidth, depth - 1)
-        if iHeight < (maxHeight - 1):
-            if isHole[iHeight + 1][iWidth]:
-                isHole[iHeight + 1][iWidth] = False
-                unmark_neighbors(iHeight + 1, iWidth, depth - 1)
-
-    # Now search!
-    for c in range(width):
-        cHeight = maxHeight
-        while board[cHeight - 1][c] == 0:
-            if cHeight == 1:
-                break
-            else:
-                cHeight -= 1
-        if cHeight != maxHeight:
-            cHeight += 1
-
-        if board[cHeight - 1][c] == 0 and isHole[cHeight - 1][c]:
-            isHole[cHeight - 1][c] = False
-            unmark_neighbors(cHeight - 1, c, 2)
-
-    # Holes
-    numberOfHoles = 0
-    for h in range(maxHeight):
-        numberOfHoles += sum([int(c) for c in isHole[h]])
-
-    return numberOfHoles
-
-def holes_v2(board, width, maxHeight):
-    numberOfHoles = 0
-    for c in range(width):
-        h = maxHeight - 1
-        while board[h][c] == 0 and h >= 0:
-            h -= 1
-        while h >= 0:
-            if board[h][c] == 0:
-                numberOfHoles += 1
-            h -= 1
-
-    return numberOfHoles
