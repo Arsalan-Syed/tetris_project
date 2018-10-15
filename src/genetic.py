@@ -56,7 +56,7 @@ def mutate(ch):
     v = 10
     for i in range(len(ch)):
         if randrange(0, 50) == 0:
-            ch[i] += randint(-v, v)
+            ch[i] += -v + 2 * random() * v
     return ch
 
 # Two chromosomes get down and dirty
