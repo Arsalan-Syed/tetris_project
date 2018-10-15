@@ -74,7 +74,7 @@ def breed_population(pop, fit_fun, higher_better):
     # and only breed on them:
     pop = sorted(pop)
     if higher_better:
-        pop = list(reverse(pop))
+        pop = list(reversed(pop))
     pop = pop[:len(pop)//10]
     # Roulette wheel section based on probabilities. Doesn't seem to
     # converge as quickly.
