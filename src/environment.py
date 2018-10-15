@@ -32,8 +32,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import pygame
 from random import choice
+
 import sys
 
 from src.player import Player
@@ -96,6 +96,7 @@ class TetrisApp(object):
 
     def __init__(self, useGUI, weights=defaultWeights):
         if useGUI:
+            import pygame
             pygame.init()
             pygame.key.set_repeat(250, 25)
         self.width = config['cell_size'] * config['cols']
@@ -245,8 +246,7 @@ class TetrisApp(object):
         while True:
             for i, row in enumerate(self.board[:-1]):
                 if 0 not in row:
-                    self.board = self.remove_row(
-                        self.board, i)
+                    self.board = self.remove_row(self.board, i)
                     break
             else:
                 break
@@ -347,5 +347,4 @@ class TetrisApp(object):
 
             if not self.gameover:
                 self.makeMove(pieceType, nextPiece)
-
         return self.rowsCleared

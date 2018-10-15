@@ -1,7 +1,6 @@
 # heuristic.py
 
 import copy
-import numpy as np
 
 def print_board(board):
     height = len(board)
@@ -52,7 +51,7 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
     score += clearedRows * clearedRows * weights[0]
     score += clearedRows * weights[1]
     score += numberOfHoles * weights[2]
-    score += avgHeight * weights[3] 
+    score += avgHeight * weights[3]
     score += maxHeight * weights[4]
     score += bumpiness * weights[5]
     return score

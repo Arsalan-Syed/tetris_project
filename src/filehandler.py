@@ -1,4 +1,4 @@
-import numpy as np
+# import numpy as np
 
 """
 When comparing algorithms, they need to be tested on the exact same

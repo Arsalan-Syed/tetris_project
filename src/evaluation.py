@@ -1,6 +1,6 @@
+from math import floor
 from src import filehandler
 from src.environment import TetrisApp
-import numpy as np
 
 '''
 Determines how good an AI player is by making it play several games
@@ -20,5 +20,4 @@ def fitness(weights):
         App = TetrisApp(False, weights)
         score += App.runSequenceNoGUI(sequence[0:limit])
 
-    return np.floor(score / len(sequences))
-
+    return floor(score / len(sequences))
