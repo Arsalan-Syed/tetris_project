@@ -108,6 +108,8 @@ class TetrisApp(object):
         self.numPieces = 0
         self.rowsCleared = 0
 
+        self.score = 0
+
         self.player = Player(weights)
 
         if useGUI:
@@ -240,16 +242,20 @@ class TetrisApp(object):
 
     def makeMove(self, pieceType, nextPieceType):
         self.new_stone_from_sequence(pieceType, nextPieceType)
-        #self.board = self.player.play(self.board, [self.stone], [pieceType])
         self.board = self.player.play(self.board, [self.stone, self.nextStone], [pieceType, nextPieceType])
+
+        numCleared = 0
 
         while True:
             for i, row in enumerate(self.board[:-1]):
                 if 0 not in row:
                     self.board = self.remove_row(self.board, i)
+                    numCleared += 1
                     break
             else:
                 break
+
+        self.score += pow(10,numCleared)
 
     def run(self):
         key_actions = {
@@ -347,4 +353,8 @@ class TetrisApp(object):
 
             if not self.gameover:
                 self.makeMove(pieceType, nextPiece)
-        return self.rowsCleared
+
+        if self.gameover:
+            self.score = 0
+
+        return self.score
