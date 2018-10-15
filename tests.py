@@ -32,9 +32,10 @@ def compare_hill_climbing_weights():
 
     best_weights = [
         [1.0, 4.0, -2.0, -1.0, -1.0, -1.0], # default
-        [0.0, 4.5, -2.5, -1.5, -2.0, -1.0], #following 3 found by hill climb
+        [0.0, 4.5, -2.5, -1.5, -2.0, -1.0], #following 4 found by hill climb
         [1.0, 4.5, -2.5, -0.5, -0.5, -0.5],
-        [0.0, 4.0, -2.5, -0.5, -1.0, 0.0]
+        [0.0, 4.0, -2.5, -0.5, -1.0, 0.0],
+        [0.5, 3.0, -2.0, -1.5, -1.0, 0.0]
     ]
 
     sequences = loadSequences("sequences/test1.txt")
