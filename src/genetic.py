@@ -3,10 +3,9 @@
 #  l: size of chromosome
 from bisect import bisect
 from itertools import accumulate
-from random import randint, random, randrange
+from random import randint, random, randrange, uniform
 from statistics import mean, stdev
 from sys import exit
-import numpy
 
 def choices(population, weights=None, *, cum_weights=None, k=1):
     """Return a k sized list of population elements chosen with replacement.
@@ -105,11 +104,15 @@ def breed_population(pop, fit_fun, higher_better):
     return pop2
 
 # Prints some data about the generation.
-def generation_stats(gen, pop):
-    i, v = min_index(pop)
+def generation_stats(gen, pop, higher_better):
+    if higher_better:
+        best_score, best_gene = max(pop)
+    else:
+        best_score, best_gene = min(pop)
     fits = [p[0] for p in pop]
-    fmt = '{:>3} {:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} {!s:<23}'
-    print(fmt.format(gen, min(fits), mean(fits), max(fits), stdev(fits), v[1]))
+    fmt = '{:>3} {:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} [{}]'
+    items = ' '.join('{:>7.3f}'.format(e) for e in best_gene)
+    print(fmt.format(gen, min(fits), mean(fits), max(fits), stdev(fits), items))
 
 def run_evolution(forefather, fitness, n, higher_better):
     fmt = '* Running evolution with population size {0}, {1} scores better.'
@@ -117,14 +120,14 @@ def run_evolution(forefather, fitness, n, higher_better):
     print(fmt.format(n, s))
     pop = list(create_population(n, forefather, fitness))
     for gen in range(1000):
-        generation_stats(gen, pop)
+        generation_stats(gen, pop, higher_better)
         pop = breed_population(pop, fitness, higher_better)
 
 def evolve_tetris():
     from evaluation import fitness
     def forefather():
-        return [random() * 10 for _ in range(8)]
-    run_evolution(forefather, fitness, 100, True)
+        return [uniform(-10, 10) for _ in range(6)]
+    run_evolution(forefather, fitness, 10, True)
 
 def evolve_polynomial():
     # Function for generating a forefather, a chromosome with no parent.
