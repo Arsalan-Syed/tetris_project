@@ -74,7 +74,9 @@ def create_population(n, gen_fun, fit_fun):
 
 def mutate(ch):
     mutate_range = 10
-    perturb_range = 0.25
+    # Small perturbation, just so that childs don't get identical
+    # genes to parents.
+    perturb_range = 0.05
     for i in range(len(ch)):
         if randrange(100) < P_MUTATION:
             v = mutate_range
