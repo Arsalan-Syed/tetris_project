@@ -9,6 +9,7 @@ neighbours by making small increments to the weights and then evaluates them
 with the fitness function.  
 """
 
+
 def convert(x):
     result = int(x)
     if result == 2:
@@ -25,7 +26,7 @@ def getWeightVectorNeighbours(weights, stepSize, sampleSize):
 
     neighbours = []
     for increment in weightIncrements:
-        delta = [x*stepSize for x in increment]
+        delta = [x * stepSize for x in increment]
         neighbour = weights.copy()
         for i in range(len(delta)):
             neighbour[i] += delta[i]
@@ -36,7 +37,8 @@ def getWeightVectorNeighbours(weights, stepSize, sampleSize):
     else:
         return neighbours
 
-def hill_climb(weight_vector,stepSize,samepleSize, sequenceLength):
+
+def hill_climb(weight_vector, stepSize, samepleSize, sequenceLength):
     current_weights = weight_vector.copy()
     sequence = [random.randint(0, 6) for x in range(sequenceLength)]
 
@@ -44,18 +46,16 @@ def hill_climb(weight_vector,stepSize,samepleSize, sequenceLength):
         bestFitness = -10000000
         bestWeights = None
 
-        print(current_weights, fitness(current_weights,sequence))
+        print(current_weights, fitness(current_weights, sequence))
 
         for neighbour in getWeightVectorNeighbours(current_weights, stepSize, samepleSize):
-            neighbourFitness = fitness(neighbour,sequence)
+            neighbourFitness = fitness(neighbour, sequence)
             if neighbourFitness > bestFitness:
                 bestFitness = neighbourFitness
                 bestWeights = neighbour
 
-        if bestFitness <= fitness(current_weights,sequence):
-            print("Best: ",current_weights,fitness(current_weights,sequence))
+        if bestFitness <= fitness(current_weights, sequence):
+            print("Best: ", current_weights, fitness(current_weights, sequence))
             return current_weights
 
         current_weights = bestWeights
-
-

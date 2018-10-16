@@ -1,7 +1,5 @@
 # heuristic.py
 
-import copy
-
 def print_board(board):
     height = len(board)
     for h in reversed(range(height)):

@@ -12,7 +12,7 @@ from src.filehandler import loadSequences
 def hill_climbing_tests():
     iterations = 10
     sequence_length = 200
-    sample_size = 50
+    sample_size = 100
     step_size = 0.5
 
     initial_weight_vector = [1.0, 4.0, -2.0, -1.0, -1.0, -1.0]
@@ -28,27 +28,27 @@ def hill_climbing_tests():
 
 def compare_hill_climbing_weights():
     iterations = 10
-    sequence_length = 200
+    sequence_length = 1000
 
     best_weights = [
-        [1.0, 4.0, -2.0, -1.0, -1.0, -1.0], # default
-        [0.0, 4.5, -2.5, -1.5, -2.0, -1.0], #following 4 found by hill climb
-        [1.0, 4.5, -2.5, -0.5, -0.5, -0.5],
-        [0.0, 4.0, -2.5, -0.5, -1.0, 0.0],
-        [0.5, 3.0, -2.0, -1.5, -1.0, 0.0]
+        [1.0, 4.0, -2.0, -1.0, -1.0, -1.0],# default
+        [1.0, 5.0, -3.0, -1.0, -0.5, -0.5],
+        [1.0, 4.5, -2.5, -1.5, -0.5, -0.5],
+        [0.0, 4.5, -2.5, -1.5, -2.0, -1.0]
     ]
 
     sequences = loadSequences("sequences/test1.txt")
 
-    print("Average: ", fitnessAverage(best_weights, sequence_length, iterations))
+    fitAvg = fitnessAverage(best_weights, sequence_length, iterations)
 
-    print(" ")
-
+    i=0
     for weights in best_weights:
         print("Weights: ",weights)
+        print("Average: ",fitAvg[i])
         print("Fixed sequence of length: ",len(sequences[0])," - Fitness: ", fitness(weights, sequences[0]))
         print("Fixed sequence of length: ",len(sequences[1])," - Fitness: ", fitness(weights, sequences[1]))
         print(" ")
+        i+=1
 
 
 
