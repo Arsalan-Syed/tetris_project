@@ -1,10 +1,36 @@
-# ch: Chromosome
-#  n: size of population
-#  l: size of chromosome
 from bisect import bisect
 from itertools import accumulate
 from random import randint, random, randrange, sample, uniform
 from statistics import mean, stdev
+
+########################################################################
+# Execution Parameters
+########################################################################
+
+# Whether to print generation stats
+DEBUG_OUTPUT = True
+
+# Individuals in population
+POP_SIZE = 100
+
+# Number of generations
+N_GENS = 50
+
+# Probability 0-100% of a gene being mutated
+P_MUTATION = 5
+
+# Whether to use 'single' crossover (mate) or 'uniform' (mate2)
+CROSSOVER_TYPE = 'single'
+
+# Fraction of the population in elitist selection (0.1 = 10%)
+ELITE_FRACTION = 0.1
+
+# Whether to use roulette wheel selection (True) or truncation/elitism
+# (False).
+ROULETTE_WHEEL_SEL = True
+
+# Number of moves to play in Tetris
+MOVE_COUNT = 500
 
 """
 Represents the genetic algorithm
@@ -77,25 +103,26 @@ def mate(parent1, parent2):
 
 def breed_population(pop, fit_fun, higher_better):
     n = len(pop)
-    # Many possibilities here. Elitist selection: take the 10% best
-    # and only breed on them:
-    pop = sorted(pop)
-    if higher_better:
-        pop = list(reversed(pop))
-    pop = pop[:int(len(pop) * ELITE_FRACTION)]
-    # Roulette wheel section based on probabilities. Doesn't seem to
-    # converge as quickly.
-    # fits = [p[0] for p in pop]
-    # worst = max(fits)
-    # fits = [worst - fit for fit in fits]
-    # tot = sum(fits)
-    # probs = [fit / tot for fit in fits]
+    if ROULETTE_WHEEL_SEL:
+        # Roulette wheel section based on probabilities. Doesn't seem
+        # to converge as quickly as truncation.
+        fits = [p[0] for p in pop]
+        tot = sum(fits)
+        probs = [fit / tot for fit in fits]
+    else:
+        # Truncation selection.
+        pop = sorted(pop)
+        if higher_better:
+            pop = list(reversed(pop))
+        pop = pop[:int(len(pop) * ELITE_FRACTION)]
     pop2 = []
-
     while len(pop2) < n:
-        # Perhaps we can allow mating with itself because it is
-        # unlikely.
-        p1, p2 = choices(pop, k = 2)
+        # We allow self-mating because it is unlikely enough in large
+        # populations.
+        if ROULETTE_WHEEL_SEL:
+            p1, p2 = choices(pop, probs, k = 2)
+        else:
+            p1, p2 = choices(pop, k = 2)
         # Find two individuals, based on their fitness probability
         # for _ in range(20):
         #     p1, p2 = choices(pop, k = 2) # , probs, k = 2)
@@ -111,9 +138,6 @@ def breed_population(pop, fit_fun, higher_better):
         # population.
         pop2.append((fit_fun(c1), c1))
         pop2.append((fit_fun(c2), c2))
-        # Also insert their parents
-        # pop2.append((fit_fun(p1[1]), p1[1]))
-        # pop2.append((fit_fun(p2[1]), p2[1]))
     return pop2
 
 # Prints some data about the generation.
@@ -145,32 +169,14 @@ def run_evolution(forefather, fitness, n, n_gens, higher_better):
         pop = breed_population(pop, fitness, higher_better)
 
 def evolve_tetris():
-    from evaluation import fitnessRandom
+    from src.environment import TetrisApp
+    def tetris_fitness(weights):
+        seq = [randint(0, 6) for _ in range(MOVE_COUNT)]
+        app = TetrisApp(False, weights)
+        return app.runSequenceNoGUI(seq)
     def forefather():
         return [uniform(-10, 10) for _ in range(5)]
-    run_evolution(forefather, fitnessRandom, POP_SIZE, N_GENS, True)
-
-########################################################################
-# Execution Parameters
-########################################################################
-
-# Whether to print generation stats
-DEBUG_OUTPUT = True
-
-# Individuals in population
-POP_SIZE = 100
-
-# Number of generations
-N_GENS = 50
-
-# Probability 0-100% of a gene being mutated
-P_MUTATION = 5
-
-# Whether to use 'single' crossover (mate) or 'uniform' (mate2)
-CROSSOVER_TYPE = 'single'
-
-# Fraction of the population in elitist selection (0.1 = 10%)
-ELITE_FRACTION = 0.1
+    run_evolution(forefather, tetris_fitness, POP_SIZE, N_GENS, True)
 
 if __name__ == '__main__':
     evolve_tetris()
