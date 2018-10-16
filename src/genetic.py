@@ -1,6 +1,6 @@
 from bisect import bisect
 from itertools import accumulate
-from random import randint, random, randrange, sample, uniform
+from random import randint, random, randrange, sample, uniform, getrandbits
 from statistics import mean, stdev
 
 ########################################################################
@@ -20,7 +20,7 @@ N_GENS = 50
 P_MUTATION = 5
 
 # Whether to use 'single' crossover (mate) or 'uniform' (mate2)
-CROSSOVER_TYPE = 'single'
+CROSSOVER_TYPE = 'uniform'
 
 # Fraction of the population in elitist selection (0.1 = 10%)
 ELITE_FRACTION = 0.1
@@ -78,7 +78,7 @@ def mutate(ch):
     return ch
 
 # Two chromosomes get down and dirty
-def mate2(parent1, parent2):
+def mate3(parent1, parent2):
     number_of_genes_from_second_parent = randint(1,len(parent2))
     child1 = parent1[:]
     child2 = parent2[:]
@@ -87,6 +87,10 @@ def mate2(parent1, parent2):
     for i in sample(range(5), k=number_of_genes_from_second_parent):
         child2[i] = parent1[i]
     return mutate(child1), mutate(child2)
+
+def mate2(parent1, parent2):
+    childs = [[parent1[1][i] if getrandbits(1) else parent2[1][i] for i in range(len(parent1[1]))] for _ in range(2)]
+    return childs[0], childs[1]
 
 def mate(parent1, parent2):
     i = randint(0, len(parent1))
