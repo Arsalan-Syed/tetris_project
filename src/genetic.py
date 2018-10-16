@@ -124,10 +124,10 @@ def run_evolution(forefather, fitness, n, higher_better):
         pop = breed_population(pop, fitness, higher_better)
 
 def evolve_tetris():
-    from evaluation import fitness
+    from evaluation import fitnessRandom
     def forefather():
         return [uniform(-10, 10) for _ in range(6)]
-    run_evolution(forefather, fitness, 10, True)
+    run_evolution(forefather, fitnessRandom, 100, True)
 
 def evolve_polynomial():
     # Function for generating a forefather, a chromosome with no parent.
