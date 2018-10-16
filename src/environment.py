@@ -255,7 +255,7 @@ class TetrisApp(object):
             else:
                 break
 
-        self.score += pow(10,numCleared)
+        self.score += pow(2,numCleared)
 
     def run(self):
         key_actions = {
