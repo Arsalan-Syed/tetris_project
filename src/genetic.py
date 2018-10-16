@@ -121,44 +121,46 @@ def generation_stats(gen, pop, higher_better):
     else:
         best_score, best_gene = min(pop)
     fits = [p[0] for p in pop]
-    fmt = '{:>3} {:>10.3e} {:>10.3e} {:>10.3e} {:>10.3e} [{}]'
+    fmt = '{:>3} {:>10.3e}, {:>10.3e}, {:>10.3e} {:>10.3e} [{}]'
     items = ' '.join('{:>7.3f}'.format(e) for e in best_gene)
     print(fmt.format(gen, min(fits), mean(fits), max(fits), stdev(fits), items))
+    print('[%.3f, %.3f, %.3f],' % (min(fits), mean(fits), max(fits)))
 
-def run_evolution(forefather, fitness, n, higher_better):
-    fmt = '* Running evolution with population size {0}, {1} scores better.'
+def run_evolution(forefather, fitness, n, n_gens, higher_better):
+    fmt = '* Running evolution for {0} generations with population size' \
+        ' {1}, {2} scores better.'
     s = 'higher' if higher_better else 'lower'
-    print(fmt.format(n, s))
+    print(fmt.format(n_gens, n, s))
     pop = list(create_population(n, forefather, fitness))
-    for gen in range(1000):
+    for gen in range(n_gens):
         generation_stats(gen, pop, higher_better)
         pop = breed_population(pop, fitness, higher_better)
 
 def evolve_tetris():
     from evaluation import fitnessRandom
     def forefather():
-        return [uniform(-10, 10) for _ in range(6)]
-    run_evolution(forefather, fitnessRandom, 100, True)
+        return [uniform(-50, 50) for _ in range(6)]
+    run_evolution(forefather, fitnessRandom, 10, 100, True)
 
-def evolve_polynomial():
-    # Function for generating a forefather, a chromosome with no parent.
-    def forefather():
-        v = 1000
-        return [randint(-v, v) for _ in range(5)]
+# def evolve_polynomial():
+#     # Function for generating a forefather, a chromosome with no parent.
+#     def forefather():
+#         v = 1000
+#         return [randint(-v, v) for _ in range(5)]
 
-    # To determine how close a chromosome comes to a polynomial.
-    def p(ch, x):
-        #return ch[0]*x + ch[1]*x + ch[2]*x + ch[3]*x + ch[4]*x
-        return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
+#     # To determine how close a chromosome comes to a polynomial.
+#     def p(ch, x):
+#         #return ch[0]*x + ch[1]*x + ch[2]*x + ch[3]*x + ch[4]*x
+#         return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
 
-    # Dummy fitness function. Calculates how well the chromosome
-    # approximates the polynomial 4x^4 - 2x^3 + 3x^2 + x - 4
-    def fitness(ch):
-        w = (4, -2, 3, 1, -4)
-        xs = [randint(-100, 100) for _ in range(100)]
-        xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
-        return mean(xs)
-    run_evolution(forefather, fitness, 5000, False)
+#     # Dummy fitness function. Calculates how well the chromosome
+#     # approximates the polynomial 4x^4 - 2x^3 + 3x^2 + x - 4
+#     def fitness(ch):
+#         w = (4, -2, 3, 1, -4)
+#         xs = [randint(-100, 100) for _ in range(100)]
+#         xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
+#         return mean(xs)
+#     run_evolution(forefather, fitness, 100, False)
 
 if __name__ == '__main__':
     #evolve_polynomial()
