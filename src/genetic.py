@@ -31,15 +31,6 @@ def choices(population, weights=None, *, cum_weights=None, k=1):
             for i in range(k)]
 
 ########################################################################
-# Utility
-########################################################################
-def max_index(l):
-    return max(enumerate(l), key = lambda x: x[1])
-
-def min_index(l):
-    return min(enumerate(l), key = lambda x: x[1])
-
-########################################################################
 # Genetic algorithm functions
 ########################################################################
 def population_fitness(pop, fit_fun):
@@ -57,11 +48,9 @@ def create_population(n, gen_fun, fit_fun):
 
 def mutate(ch):
     mutate_range = 10
-    perturb_range = 0.5
+    perturb_range = 0.25
     for i in range(len(ch)):
-        # 2% of a major mutation, otherwise perturb the gene just a
-        # little.
-        if randrange(50) == 0:
+        if randrange(100) < P_MUTATION:
             v = mutate_range
         else:
             v = perturb_range
@@ -156,10 +145,21 @@ def evolve_tetris():
         return [uniform(-10, 10) for _ in range(5)]
     run_evolution(forefather, fitnessRandom, POP_SIZE, N_GENS, True)
 
-# Tune the execution by changing these!
+########################################################################
+# Execution Parameters
+########################################################################
+
+# Whether to print generation stats
 DEBUG_OUTPUT = True
+
+# Individuals in population
 POP_SIZE = 100
+
+# Number of generations
 N_GENS = 50
+
+# Probability 0-100% of a gene being mutated
+P_MUTATION = 5
 
 if __name__ == '__main__':
     evolve_tetris()
