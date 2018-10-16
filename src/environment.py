@@ -113,6 +113,7 @@ class TetrisApp(object):
         self.player = Player(weights)
 
         if useGUI:
+            import pygame
             self.screen = pygame.display.set_mode((self.width, self.height))
             pygame.event.set_blocked(pygame.MOUSEMOTION)
             # We do not need
@@ -151,6 +152,7 @@ class TetrisApp(object):
         self.new_stone()
 
     def center_msg(self, msg):
+        import pygame
         for i, line in enumerate(msg.splitlines()):
             msg_image = pygame.font.Font(
                 pygame.font.get_default_font(), 12).render(
@@ -165,6 +167,7 @@ class TetrisApp(object):
                 self.height // 2 - msgim_center_y + i * 22))
 
     def draw_matrix(self, matrix, offset):
+        import pygame
         off_x, off_y = offset
         for y, row in enumerate(matrix):
             for x, val in enumerate(row):
@@ -193,6 +196,7 @@ class TetrisApp(object):
                 self.stone_x = new_x
 
     def quit(self):
+        import pygame
         self.center_msg("Exiting...")
         pygame.display.update()
         sys.exit()
@@ -219,6 +223,7 @@ class TetrisApp(object):
             self.gameover = False
 
     def render(self):
+        import pygame
         if not self.gameover:
             self.screen.fill((0, 0, 0))
 
@@ -258,6 +263,7 @@ class TetrisApp(object):
         self.score += pow(2,numCleared)
 
     def run(self):
+        import pygame
         key_actions = {
             'ESCAPE': self.quit,
             'LEFT': lambda: self.move(-1),
@@ -317,7 +323,7 @@ class TetrisApp(object):
             dont_burn_my_cpu.tick(config['maxfps'])
 
     def runSequence(self,sequence):
-
+        import pygame
         pygame.time.set_timer(pygame.USEREVENT + 1, config['delay'])
         dont_burn_my_cpu = pygame.time.Clock()
         pieceNumber = 0
