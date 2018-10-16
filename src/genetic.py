@@ -68,6 +68,7 @@ def mutate(ch):
         ch[i] += -v + 2 * random() * v
     return ch
 
+# Two chromosomes get down and dirty
 def mate2(parent1, parent2):
     number_of_genes_from_second_parent = randint(1,len(parent2))
     child1 = parent1[:]
@@ -77,7 +78,7 @@ def mate2(parent1, parent2):
     for i in random.sample(range(5), k=number_of_genes_from_second_parent):
         child2[i] = parent1[i]
     return child1, child2
-# Two chromosomes get down and dirty
+
 def mate(parent1, parent2):
     i = randint(0, len(parent1))
     code1, code2 = parent1[1], parent2[1]
@@ -149,26 +150,5 @@ def evolve_tetris():
         return [uniform(-10, 10) for _ in range(5)]
     run_evolution(forefather, fitnessRandom, 100, 50, True)
 
-# def evolve_polynomial():
-#     # Function for generating a forefather, a chromosome with no parent.
-#     def forefather():
-#         v = 1000
-#         return [randint(-v, v) for _ in range(5)]
-
-#     # To determine how close a chromosome comes to a polynomial.
-#     def p(ch, x):
-#         #return ch[0]*x + ch[1]*x + ch[2]*x + ch[3]*x + ch[4]*x
-#         return ch[0]*x**4 + ch[1]*x**3 + ch[2]*x**2 + ch[3]*x + ch[4]
-
-#     # Dummy fitness function. Calculates how well the chromosome
-#     # approximates the polynomial 4x^4 - 2x^3 + 3x^2 + x - 4
-#     def fitness(ch):
-#         w = (4, -2, 3, 1, -4)
-#         xs = [randint(-100, 100) for _ in range(100)]
-#         xs = [abs(p(w, x) - p(ch, x))**2 for x in xs]
-#         return mean(xs)
-#     run_evolution(forefather, fitness, 100, False)
-
 if __name__ == '__main__':
-    #evolve_polynomial()
     evolve_tetris()
