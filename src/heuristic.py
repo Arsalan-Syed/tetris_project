@@ -7,7 +7,7 @@ def print_board(board):
         print(row)
 
 
-defaultWeights = [2.0, -2.0, -1.0, -1.0, -1.0]
+defaultWeights = [4.0, -2.0, -1.0, -1.0, -1.0]
 
 
 def evaluate(board, weights=defaultWeights, clearedRows=0, maxHeight=0):
@@ -44,7 +44,7 @@ def evaluate(board, weights=defaultWeights, clearedRows=0, maxHeight=0):
 
     # Calculate the heuristic score!
     score = 0
-    score += clearedRows * clearedRows * weights[0]
+    score += clearedRows * weights[0]
     score += numberOfHoles * weights[1]
     score += avgHeight * weights[2]
     score += maxHeight * weights[3]

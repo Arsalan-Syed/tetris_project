@@ -15,7 +15,7 @@ def hill_climbing_tests():
     sample_size = 100
     step_size = 0.5
 
-    initial_weight_vector = [1.0, 4.0, -2.0, -1.0, -1.0, -1.0]
+    initial_weight_vector = [4.0, -2.0, -1.0, -1.0, -1.0]
     new_weight_vector = hill_climb(initial_weight_vector, step_size, sample_size, sequence_length)
 
     avg = fitnessAverage([initial_weight_vector,new_weight_vector], sequence_length, iterations)
@@ -31,10 +31,10 @@ def compare_hill_climbing_weights():
     sequence_length = 1000
 
     best_weights = [
-        [1.0, 4.0, -2.0, -1.0, -1.0, -1.0],# default
-        [1.0, 5.0, -3.0, -1.0, -0.5, -0.5],
-        [1.0, 4.5, -2.5, -1.5, -0.5, -0.5],
-        [0.0, 4.5, -2.5, -1.5, -2.0, -1.0]
+        [4.0, -2.0, -1.0, -1.0, -1.0],# default
+        [5.0, -3.0, -1.0, -0.5, -0.5],
+        [4.5, -2.5, -1.5, -0.5, -0.5],
+        [4.5, -2.5, -1.5, -2.0, -1.0]
     ]
 
     sequences = loadSequences("sequences/test1.txt")
