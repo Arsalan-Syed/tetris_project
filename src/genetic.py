@@ -61,7 +61,15 @@ def mutate(ch):
         if randrange(0, 50) == 0:
             ch[i] += -v + 2 * random() * v
     return ch
-
+def mate2(parent1, parent2):
+    number_of_genes_from_second_parent = randint(1,len(parent2))
+    child1 = parent1[:]
+    child2 = parent2[:]
+    for i in random.sample(range(5), k=number_of_genes_from_second_parent):
+        child1[i] = parent2[i]
+    for i in random.sample(range(5), k=number_of_genes_from_second_parent):
+        child2[i] = parent1[i]
+    return child1, child2
 # Two chromosomes get down and dirty
 def mate(parent1, parent2):
     i = randint(0, len(parent1))
