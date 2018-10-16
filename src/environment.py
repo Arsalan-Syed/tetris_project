@@ -351,7 +351,7 @@ class TetrisApp(object):
             dont_burn_my_cpu.tick(config['maxfps'])
             pieceNumber += 1
 
-    def runSequenceNoGUI(self, sequence):
+    def runSequenceNoGUI(self, sequence, reset = True):
         self.board = new_board()
         for i in range(len(sequence)-1):
             pieceType = sequence[i]
@@ -360,7 +360,7 @@ class TetrisApp(object):
             if not self.gameover:
                 self.makeMove(pieceType, nextPiece)
 
-        if self.gameover:
+        if self.gameover and reset:
             self.score = 0
 
         return self.score

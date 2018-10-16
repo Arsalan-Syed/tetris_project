@@ -59,14 +59,6 @@ def choices(population, weights=None, *, cum_weights=None, k=1):
 ########################################################################
 # Genetic algorithm functions
 ########################################################################
-def population_fitness(pop, fit_fun):
-    # Computes fitness for each individual.
-    fits = [fit_fun(p) for p in pop]
-    worst = max(fits)
-    fits = [worst - fit for fit in fits]
-    tot = sum(fits)
-    return [f / tot for f in fits]
-
 def create_population(n, gen_fun, fit_fun):
     for _ in range(n):
         ch = gen_fun()
@@ -165,6 +157,7 @@ def run_evolution(forefather, fitness, n, n_gens, higher_better):
     fmt = '* Running evolution for {0} generations with population size' \
         ' {1}, {2} scores better.'
     s = 'higher' if higher_better else 'lower'
+    print(fmt.format(n_gens, n, s))
     pop = list(create_population(n, forefather, fitness))
     for gen in range(n_gens):
         generation_stats(gen, pop, higher_better)
@@ -175,7 +168,7 @@ def evolve_tetris():
     def tetris_fitness(weights):
         seq = [randint(0, 6) for _ in range(MOVE_COUNT)]
         app = TetrisApp(False, weights)
-        return app.runSequenceNoGUI(seq)
+        return app.runSequenceNoGUI(seq, reset = False)
     def forefather():
         return [uniform(-10, 10) for _ in range(5)]
     run_evolution(forefather, tetris_fitness, POP_SIZE, N_GENS, True)
