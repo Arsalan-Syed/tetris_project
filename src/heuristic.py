@@ -7,12 +7,12 @@ def print_board(board):
         print(row)
 
 
-defaultWeights = [1.0, 4.0, -2.0, -1.0, -1.0, -1.0]
+defaultWeights = [4.0, -2.0, -1.0, -1.0, -1.0]
 
 '''
 Calculates the heuristic value of the board
 '''
-def evaluate(board, weights=defaultWeights, clearedRows=0):
+def evaluate(board, weights=defaultWeights, clearedRows=0, maxHeight=0):
     # Extract height and width and create a board that is more suitable for evaluation
     height = len(board) - 1
     width = len(board[0])
@@ -22,7 +22,7 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
     # Extract all the holes while we're at it
     numberOfHoles = 0
     for c in range(width):
-        h = 0
+        h = maxHeight
         while h < height:
             if board[h][c] != 0:
                 columnHeight[c] = height - h
@@ -46,10 +46,9 @@ def evaluate(board, weights=defaultWeights, clearedRows=0):
 
     # Calculate the heuristic score!
     score = 0
-    score += clearedRows * clearedRows * weights[0]
-    score += clearedRows * weights[1]
-    score += numberOfHoles * weights[2]
-    score += avgHeight * weights[3]
-    score += maxHeight * weights[4]
-    score += bumpiness * weights[5]
+    score += clearedRows * weights[0]
+    score += numberOfHoles * weights[1]
+    score += avgHeight * weights[2]
+    score += maxHeight * weights[3]
+    score += bumpiness * weights[4]
     return score

@@ -55,7 +55,7 @@ class Player(object):
         best_evaluation = -100000000
 
         for new_state in new_states:
-            (x, y, rot) = new_state
+            (x, y, rot, start_y) = new_state
             add_piece(board, piece_rotations[rot], (x, y))
             board, full_rows = remove_full_rows(board)
 
@@ -64,7 +64,7 @@ class Player(object):
             if len(pieces) > 1:
                 _, _, _, value = self.bestMove(board, pieces[1:], piece_types[1:], new_cleared_rows)
             else:
-                value = heuristic.evaluate(board, self.weights, new_cleared_rows)
+                value = heuristic.evaluate(board, self.weights, new_cleared_rows, start_y)
 
             if value > best_evaluation:
                 best_evaluation = value
@@ -73,7 +73,7 @@ class Player(object):
             board = insert_rows(board, full_rows)
             remove_piece(board, piece_rotations[rot], (x, y))
 
-        x, y, rot = best_state
+        x, y, rot, _ = best_state
         return (x, y, rot, best_evaluation)
 
     '''
@@ -112,7 +112,7 @@ class Player(object):
                 while not check_collision(board, current_piece, (x, y)):
                     y += 1
 
-                new_states.append((x, y, rotation))
+                new_states.append((x, y, rotation, start_y))
 
             current_piece = rotate_clockwise(current_piece)
 
