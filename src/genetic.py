@@ -131,14 +131,20 @@ def generation_stats(gen, pop, higher_better):
     fits = [p[0] for p in pop]
     fmt = '{:>3} {:>10.3e}, {:>10.3e}, {:>10.3e} {:>10.3e} [{}]'
     items = ' '.join('{:>7.3f}'.format(e) for e in best_gene)
-    print(fmt.format(gen, min(fits), mean(fits), max(fits), stdev(fits), items))
-    print('[%.3f, %.3f, %.3f],' % (min(fits), mean(fits), max(fits)))
+    min_fits = min(fits)
+    max_fits = max(fits)
+    mean_fits = mean(fits)
+    stdev_fits = stdev(fits)
+    if DEBUG_OUTPUT:
+        print(fmt.format(gen,
+                         min_fits, mean_fits, max_fits, stdev_fits,
+                         items))
+    print('[%.3f, %.3f, %.3f],' % (min_fits, mean_fits, max_fits))
 
 def run_evolution(forefather, fitness, n, n_gens, higher_better):
     fmt = '* Running evolution for {0} generations with population size' \
         ' {1}, {2} scores better.'
     s = 'higher' if higher_better else 'lower'
-    print(fmt.format(n_gens, n, s))
     pop = list(create_population(n, forefather, fitness))
     for gen in range(n_gens):
         generation_stats(gen, pop, higher_better)
@@ -148,7 +154,12 @@ def evolve_tetris():
     from evaluation import fitnessRandom
     def forefather():
         return [uniform(-10, 10) for _ in range(5)]
-    run_evolution(forefather, fitnessRandom, 100, 50, True)
+    run_evolution(forefather, fitnessRandom, POP_SIZE, N_GENS, True)
+
+# Tune the execution by changing these!
+DEBUG_OUTPUT = True
+POP_SIZE = 100
+N_GENS = 50
 
 if __name__ == '__main__':
     evolve_tetris()
