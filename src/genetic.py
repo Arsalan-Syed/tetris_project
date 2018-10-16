@@ -56,11 +56,18 @@ def create_population(n, gen_fun, fit_fun):
         yield fit_fun(ch), ch
 
 def mutate(ch):
-    v = 10
+    mutate_range = 10
+    perturb_range = 0.5
     for i in range(len(ch)):
-        if randrange(0, 50) == 0:
-            ch[i] += -v + 2 * random() * v
+        # 2% of a major mutation, otherwise perturb the gene just a
+        # little.
+        if randrange(50) == 0:
+            v = mutate_range
+        else:
+            v = perturb_range
+        ch[i] += -v + 2 * random() * v
     return ch
+
 def mate2(parent1, parent2):
     number_of_genes_from_second_parent = randint(1,len(parent2))
     child1 = parent1[:]
@@ -139,8 +146,8 @@ def run_evolution(forefather, fitness, n, n_gens, higher_better):
 def evolve_tetris():
     from evaluation import fitnessRandom
     def forefather():
-        return [uniform(-50, 50) for _ in range(5)]
-    run_evolution(forefather, fitnessRandom, 10, 100, True)
+        return [uniform(-10, 10) for _ in range(5)]
+    run_evolution(forefather, fitnessRandom, 100, 50, True)
 
 # def evolve_polynomial():
 #     # Function for generating a forefather, a chromosome with no parent.
