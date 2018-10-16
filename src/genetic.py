@@ -3,7 +3,7 @@
 #  l: size of chromosome
 from bisect import bisect
 from itertools import accumulate
-from random import randint, random, randrange, uniform
+from random import randint, random, randrange, sample, uniform
 from statistics import mean, stdev
 
 """
@@ -62,11 +62,11 @@ def mate2(parent1, parent2):
     number_of_genes_from_second_parent = randint(1,len(parent2))
     child1 = parent1[:]
     child2 = parent2[:]
-    for i in random.sample(range(5), k=number_of_genes_from_second_parent):
+    for i in sample(range(5), k=number_of_genes_from_second_parent):
         child1[i] = parent2[i]
-    for i in random.sample(range(5), k=number_of_genes_from_second_parent):
+    for i in sample(range(5), k=number_of_genes_from_second_parent):
         child2[i] = parent1[i]
-    return child1, child2
+    return mutate(child1), mutate(child2)
 
 def mate(parent1, parent2):
     i = randint(0, len(parent1))
@@ -101,7 +101,12 @@ def breed_population(pop, fit_fun, higher_better):
         #     p1, p2 = choices(pop, k = 2) # , probs, k = 2)
         #     if p1 != p2:
         #         break
-        c1, c2 = mate(p1, p2)
+        if CROSSOVER_TYPE == 'single':
+            c1, c2 = mate(p1, p2)
+        elif CROSSOVER_TYPE == 'uniform':
+            c1, c2 = mate2(p1, p2)
+        else:
+            print('Wrong crossover type!')
         # Calculate their fitness and insert them in the new
         # population.
         pop2.append((fit_fun(c1), c1))
@@ -160,6 +165,9 @@ N_GENS = 50
 
 # Probability 0-100% of a gene being mutated
 P_MUTATION = 5
+
+# Whether to use 'single' crossover (mate) or 'uniform' (mate2)
+CROSSOVER_TYPE = 'single'
 
 if __name__ == '__main__':
     evolve_tetris()
