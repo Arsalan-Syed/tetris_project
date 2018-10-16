@@ -139,7 +139,7 @@ def run_evolution(forefather, fitness, n, n_gens, higher_better):
 def evolve_tetris():
     from evaluation import fitnessRandom
     def forefather():
-        return [uniform(-50, 50) for _ in range(6)]
+        return [uniform(-50, 50) for _ in range(5)]
     run_evolution(forefather, fitnessRandom, 10, 100, True)
 
 # def evolve_polynomial():
