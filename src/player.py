@@ -80,14 +80,25 @@ class Player(object):
         elif current_piece_type in [1, 2, 5]:
             numRotations = 2
 
+        # Get the max height of the current board
+        boardHeight = len(board) - 1
+        maxHeight = 0
+        while maxHeight < boardHeight:
+            if sum(board[maxHeight]) != 0:
+                break
+            maxHeight += 1
+
         # Each iteration represents a 90 degree rotation
         for rotation in range(numRotations):
+            height = len(current_piece)
             width = getMaxWidth(current_piece)
             possible_x_placements = 11 - width
 
+            start_y = max(0, maxHeight - height)
+
             # For each possible x position, we let the piece fall straight down
             for x in range(possible_x_placements):
-                y = 0
+                y = start_y
                 while not check_collision(board, current_piece, (x, y)):
                     y += 1
 
