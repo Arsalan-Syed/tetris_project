@@ -1,11 +1,23 @@
 import copy
 
+'''
+Adds a piece to the board. The piece and board
+are 2D arrays. 
+'''
+
+
 def add_piece(board, piece, coord):
     off_x, off_y = coord
     for cy, row in enumerate(piece):
         for cx, val in enumerate(row):
             board[cy + off_y - 1][cx + off_x] += val
     return board
+
+
+'''
+Removes a piece from the board. The piece and board
+are 2D arrays. 
+'''
 
 
 def remove_piece(board, piece, coord):
@@ -15,6 +27,7 @@ def remove_piece(board, piece, coord):
             board[cy + off_y - 1][cx + off_x] -= val
     return board
 
+
 def remove_full_rows(board):
     rows = []
     new_board = copy.copy(board)
@@ -23,15 +36,22 @@ def remove_full_rows(board):
     for h in range(height):
         if 0 not in new_board[h]:
             rows.append((h, new_board.pop(h)))
-            new_board = [[0]*width] + new_board
+            new_board = [[0] * width] + new_board
 
     return (new_board, rows)
+
 
 def insert_rows(board, rows):
     new_board = copy.copy(board[len(rows):])
     for h, row in rows:
         new_board.insert(h, row)
     return new_board
+
+
+'''
+Performs a 90 degree rotation on a tetromino piece
+'''
+
 
 def rotate_clockwise(shape):
     return [[shape[y][x]
@@ -41,16 +61,6 @@ def rotate_clockwise(shape):
 
 def getMaxWidth(piece):
     return max([len(x) for x in piece])
-
-
-def join_matrixes(mat1, mat2, mat2_off):
-    result = copy.deepcopy(mat1)
-    off_x, off_y = mat2_off
-    for cy, row in enumerate(mat2):
-        for cx, val in enumerate(row):
-            if result[cy + off_y - 1][cx + off_x] == 0:
-                result[cy + off_y - 1][cx + off_x] += val
-    return result
 
 
 def check_collision(board, shape, offset):
@@ -63,5 +73,3 @@ def check_collision(board, shape, offset):
             except IndexError:
                 return True
     return False
-
-

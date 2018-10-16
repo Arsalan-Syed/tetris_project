@@ -5,7 +5,10 @@ from bisect import bisect
 from itertools import accumulate
 from random import randint, random, randrange, uniform
 from statistics import mean, stdev
-from sys import exit
+
+"""
+Represents the genetic algorithm
+"""
 
 def choices(population, weights=None, *, cum_weights=None, k=1):
     """Return a k sized list of population elements chosen with replacement.
@@ -40,7 +43,7 @@ def min_index(l):
 # Genetic algorithm functions
 ########################################################################
 def population_fitness(pop, fit_fun):
-    '''Computes fitness for each individual.'''
+    # Computes fitness for each individual.
     fits = [fit_fun(p) for p in pop]
     worst = max(fits)
     fits = [worst - fit for fit in fits]

@@ -1,26 +1,10 @@
-# import numpy as np
-
 """
-When comparing algorithms, they need to be tested on the exact same
-sequence
+Class responsible for I/O operations
 """
 
-
-def generatePieces(length):
-    return np.random.randint(7, size=length)
-
-
-def writeToFile(filename, array):
-    f = open(filename, "a")
-    for element in array:
-        f.write(str(element)+" ")
-    f.write("\n")
-
-
-def saveSequences(numberOfLines, sequenceLength):
-    for i in range(numberOfLines):
-        pieces = generatePieces(sequenceLength)
-        writeToFile("../sequences/test2.txt", pieces)
+'''
+Given a filename, will load it as a list of integers
+'''
 
 
 def loadSequences(filename):
