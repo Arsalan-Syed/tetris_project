@@ -82,7 +82,7 @@ def breed_population(pop, fit_fun, higher_better):
     pop = sorted(pop)
     if higher_better:
         pop = list(reversed(pop))
-    pop = pop[:len(pop)//10]
+    pop = pop[:int(len(pop) * ELITE_FRACTION)]
     # Roulette wheel section based on probabilities. Doesn't seem to
     # converge as quickly.
     # fits = [p[0] for p in pop]
@@ -168,6 +168,9 @@ P_MUTATION = 5
 
 # Whether to use 'single' crossover (mate) or 'uniform' (mate2)
 CROSSOVER_TYPE = 'single'
+
+# Fraction of the population in elitist selection (0.1 = 10%)
+ELITE_FRACTION = 0.1
 
 if __name__ == '__main__':
     evolve_tetris()
