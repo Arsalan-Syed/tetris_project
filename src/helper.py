@@ -59,13 +59,25 @@ def rotate_clockwise(shape):
             for x in range(len(shape[0]) - 1, -1, -1)]
 
 
+'''
+Gets the width of this piece
+The piece is represented as a 2D array
+'''
+
+
 def getMaxWidth(piece):
     return max([len(x) for x in piece])
 
 
-def check_collision(board, shape, offset):
+'''
+Checks if there is a collision between the board and 
+a piece
+'''
+
+
+def check_collision(board, piece, offset):
     off_x, off_y = offset
-    for cy, row in enumerate(shape):
+    for cy, row in enumerate(piece):
         for cx, cell in enumerate(row):
             try:
                 if cell and board[cy + off_y][cx + off_x]:

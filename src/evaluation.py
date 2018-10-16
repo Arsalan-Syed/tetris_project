@@ -1,13 +1,14 @@
-from random import randint
-from src.environment import TetrisApp
-import random
-
 """
 Determines how good an AI player is by making it play several games
 and counting the average number of rows it clears per game. This will be used
 to compare different genetic algorithm (GA) solutions as well as GA's to
 other local search algorithms
 """
+
+
+from random import randint
+from src.environment import TetrisApp
+import random
 
 
 '''

@@ -12,6 +12,9 @@ class Player(object):
         self.weights = weights
 
     '''
+    Simulates the agent making a move. It gets the state of the board and a piece
+    and then decides where on the board it will place it.
+    
     board: a 2D array representing the board
     currentPiece: (2D array) the piece that we can move at the moment
     nextPiece: (2D array) the piece that will be provided once currentPiece is placed. 
@@ -30,6 +33,14 @@ class Player(object):
             piece = rotate_clockwise(piece)
 
         return add_piece(board, piece, (x, y))
+
+    '''
+    Finds all possible moves and uses the heuristic function to 
+    determine the best possible move. 
+    
+    pieces: list of pieces (we know the current piece and the one after that)
+    piece_types: list that indicates what type the elements in pieces are
+    '''
 
     def bestMove(self, board, pieces, piece_types, cleared_rows=0):
         current_piece = pieces[0]
@@ -66,8 +77,7 @@ class Player(object):
         return (x, y, rot, best_evaluation)
 
     '''
-    Return all possible board states as a list 
-    of 2d arrays
+    Return all possible board states as a list of 2d arrays
     '''
 
     def getPossibleNextStates(self, board, current_piece, current_piece_type):

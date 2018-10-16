@@ -9,7 +9,9 @@ def print_board(board):
 
 defaultWeights = [1.0, 4.0, -2.0, -1.0, -1.0, -1.0]
 
-
+'''
+Calculates the heuristic value of the board
+'''
 def evaluate(board, weights=defaultWeights, clearedRows=0):
     # Extract height and width and create a board that is more suitable for evaluation
     height = len(board) - 1
