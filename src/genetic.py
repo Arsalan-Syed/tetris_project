@@ -90,7 +90,7 @@ def mate3(parent1, parent2):
 
 def mate2(parent1, parent2):
     childs = [[parent1[1][i] if getrandbits(1) else parent2[1][i] for i in range(len(parent1[1]))] for _ in range(2)]
-    return childs[0], childs[1]
+    return mutate(childs[0]), mutate(childs[1])
 
 def mate(parent1, parent2):
     i = randint(0, len(parent1))
