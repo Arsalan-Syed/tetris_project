@@ -269,6 +269,9 @@ class TetrisApp(object):
                     maxHeight = config['rows'] - h
                     break
             self.score -= (maxHeight / config['rows'])
+            # Make sure that score is not negative
+            if self.score < 0:
+                self.score = 0
 
 
     def run(self):
