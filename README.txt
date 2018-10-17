@@ -1,4 +1,4 @@
-## Running the program
+# Running the program
 
 The program can be run with or without a user interface. Using the interface does make the game run slower but
 can be useful for visualising an agent's strategies.
@@ -11,7 +11,7 @@ The file **run.py** is meant for running the game. There are two methods, _runIn
 Either method can be run using some default weights or by providing custom weights
 
 
-## Running the optimization algorithms
+# Running the optimization algorithms
 
 1. Hill climbing: this method can be run by running from the method _hill_climbing_optimization_ in **tests.py**. It will
 attempt to produce some weights that on average outperform the default weights
@@ -22,7 +22,7 @@ attempt to produce some weights that on average outperform the default weights
 
 In order to obtain metrics similar to those seen in the report, one can use the method _compare_weights_ in **tests.py**
 
-## Using pypy
+# Using pypy
 
 pypy is a faster alternative to running the application in python. It is recommended to use pypy when running
 the hill climbing algorithm or the genetic algorithm. For simply letting the agent play the game,
