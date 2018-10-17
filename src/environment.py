@@ -245,7 +245,7 @@ class TetrisApp(object):
 
         pygame.display.update()
 
-    def makeMove(self, pieceType, nextPieceType):
+    def makeMove(self, pieceType, nextPieceType, isHillClimb=False):
         self.new_stone_from_sequence(pieceType, nextPieceType)
         self.board = self.player.play(self.board, [self.stone, self.nextStone], [pieceType, nextPieceType])
 
@@ -261,6 +261,18 @@ class TetrisApp(object):
                 break
 
         self.score += pow(2,numCleared)
+        if isHillClimb:
+            # Check the current height of the board
+            maxHeight = 0
+            for h in range(config['rows']):
+                if sum(self.board[h]) == 0:
+                    maxHeight = config['rows'] - h
+                    break
+            self.score -= (maxHeight / config['rows'])
+            # Make sure that score is not negative
+            if self.score < 0:
+                self.score = 0
+
 
     def run(self):
         import pygame
@@ -351,16 +363,16 @@ class TetrisApp(object):
             dont_burn_my_cpu.tick(config['maxfps'])
             pieceNumber += 1
 
-    def runSequenceNoGUI(self, sequence):
+    def runSequenceNoGUI(self, sequence, reset=True, isHillClimb=False):
         self.board = new_board()
         for i in range(len(sequence)-1):
             pieceType = sequence[i]
             nextPiece = sequence[i+1]
 
             if not self.gameover:
-                self.makeMove(pieceType, nextPiece)
+                self.makeMove(pieceType, nextPiece, isHillClimb=isHillClimb)
 
-        if self.gameover:
+        if self.gameover and reset:
             self.score = 0
 
         return self.score

@@ -9,11 +9,11 @@ from src.evaluation import fitness
 from src.filehandler import loadSequences
 
 
-def hill_climbing_tests():
+def hill_climbing_optimization():
     iterations = 10
-    sequence_length = 200
+    sequence_length = 500
     sample_size = 100
-    step_size = 0.5
+    step_size = 0.25
 
     initial_weight_vector = [4.0, -2.0, -1.0, -1.0, -1.0]
     new_weight_vector = hill_climb(initial_weight_vector, step_size, sample_size, sequence_length)
@@ -26,15 +26,14 @@ def hill_climbing_tests():
     assert new_weights_average_score > old_weights_average_score
 
 
-def compare_hill_climbing_weights():
+def compare_weights():
     iterations = 10
     sequence_length = 1000
 
     best_weights = [
         [4.0, -2.0, -1.0, -1.0, -1.0],# default
-        [5.0, -3.0, -1.0, -0.5, -0.5],
-        [4.5, -2.5, -1.5, -0.5, -0.5],
-        [4.5, -2.5, -1.5, -2.0, -1.0]
+        [4.25, -2.5, -0.75, -0.5, -0.5],
+        [4.15, -2.4, -0.75, -0.4, -0.4]
     ]
 
     sequences = loadSequences("sequences/test1.txt")
@@ -54,4 +53,4 @@ def compare_hill_climbing_weights():
 
 if __name__ == '__main__':
     #hill_climbing_tests()
-    compare_hill_climbing_weights()
+    compare_weights()

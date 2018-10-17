@@ -1,6 +1,6 @@
 from bisect import bisect
 from itertools import accumulate
-from random import randint, random, randrange, sample, uniform
+from random import randint, random, randrange, sample, uniform, getrandbits
 from statistics import mean, stdev
 
 ########################################################################
@@ -17,20 +17,21 @@ POP_SIZE = 100
 N_GENS = 50
 
 # Probability 0-100% of a gene being mutated
-P_MUTATION = 5
+P_MUTATION = 2
 
-# Whether to use 'single' crossover (mate) or 'uniform' (mate2)
-CROSSOVER_TYPE = 'single'
+# Whether to use 'single' crossover (mate), 'uniform' (mate2) or
+# 'none' for no crossover.
+CROSSOVER_TYPE = 'none'
 
 # Fraction of the population in elitist selection (0.1 = 10%)
 ELITE_FRACTION = 0.1
 
 # Whether to use roulette wheel selection (True) or truncation/elitism
 # (False).
-ROULETTE_WHEEL_SEL = True
+ROULETTE_WHEEL_SEL = False
 
 # Number of moves to play in Tetris
-MOVE_COUNT = 500
+MOVE_COUNT = 4000
 
 """
 Represents the genetic algorithm
@@ -59,20 +60,13 @@ def choices(population, weights=None, *, cum_weights=None, k=1):
 ########################################################################
 # Genetic algorithm functions
 ########################################################################
-def population_fitness(pop, fit_fun):
-    # Computes fitness for each individual.
-    fits = [fit_fun(p) for p in pop]
-    worst = max(fits)
-    fits = [worst - fit for fit in fits]
-    tot = sum(fits)
-    return [f / tot for f in fits]
-
 def create_population(n, gen_fun, fit_fun):
     for _ in range(n):
         ch = gen_fun()
         yield fit_fun(ch), ch
 
 def mutate(ch):
+    ch = list(ch)
     mutate_range = 10
     # Small perturbation, just so that childs don't get identical
     # genes to parents.
@@ -86,7 +80,7 @@ def mutate(ch):
     return ch
 
 # Two chromosomes get down and dirty
-def mate2(parent1, parent2):
+def mate3(parent1, parent2):
     number_of_genes_from_second_parent = randint(1,len(parent2))
     child1 = parent1[:]
     child2 = parent2[:]
@@ -96,12 +90,16 @@ def mate2(parent1, parent2):
         child2[i] = parent1[i]
     return mutate(child1), mutate(child2)
 
+def mate2(parent1, parent2):
+    childs = [[parent1[1][i] if getrandbits(1) else parent2[1][i] for i in range(len(parent1[1]))] for _ in range(2)]
+    return mutate(childs[0]), mutate(childs[1])
+
 def mate(parent1, parent2):
     i = randint(0, len(parent1))
     code1, code2 = parent1[1], parent2[1]
-    child_code1 = mutate(code1[:i] + code2[i:])
-    child_code2 = mutate(code2[:i] + code1[i:])
-    return child_code1, child_code2
+    child1 = code1[:i] + code2[i:]
+    child2 = code2[:i] + code1[i:]
+    return mutate(child1), mutate(child2)
 
 def breed_population(pop, fit_fun, higher_better):
     n = len(pop)
@@ -125,15 +123,12 @@ def breed_population(pop, fit_fun, higher_better):
             p1, p2 = choices(pop, probs, k = 2)
         else:
             p1, p2 = choices(pop, k = 2)
-        # Find two individuals, based on their fitness probability
-        # for _ in range(20):
-        #     p1, p2 = choices(pop, k = 2) # , probs, k = 2)
-        #     if p1 != p2:
-        #         break
         if CROSSOVER_TYPE == 'single':
             c1, c2 = mate(p1, p2)
         elif CROSSOVER_TYPE == 'uniform':
             c1, c2 = mate2(p1, p2)
+        elif CROSSOVER_TYPE == 'none':
+            c1, c2 = mutate(p1[1]), mutate(p2[1])
         else:
             print('Wrong crossover type!')
         # Calculate their fitness and insert them in the new
@@ -165,6 +160,7 @@ def run_evolution(forefather, fitness, n, n_gens, higher_better):
     fmt = '* Running evolution for {0} generations with population size' \
         ' {1}, {2} scores better.'
     s = 'higher' if higher_better else 'lower'
+    print(fmt.format(n_gens, n, s))
     pop = list(create_population(n, forefather, fitness))
     for gen in range(n_gens):
         generation_stats(gen, pop, higher_better)
@@ -175,7 +171,7 @@ def evolve_tetris():
     def tetris_fitness(weights):
         seq = [randint(0, 6) for _ in range(MOVE_COUNT)]
         app = TetrisApp(False, weights)
-        return app.runSequenceNoGUI(seq)
+        return app.runSequenceNoGUI(seq, reset = False)
     def forefather():
         return [uniform(-10, 10) for _ in range(5)]
     run_evolution(forefather, tetris_fitness, POP_SIZE, N_GENS, True)
