@@ -261,6 +261,14 @@ class TetrisApp(object):
                 break
 
         self.score += pow(2,numCleared)
+        # Check the current height of the board
+        maxHeight = 0
+        for h in range(config['rows']):
+            if sum(self.board[h]) == 0:
+                maxHeight = config['rows'] - h
+                break
+        self.score -= (maxHeight / config['rows'])
+
 
     def run(self):
         import pygame

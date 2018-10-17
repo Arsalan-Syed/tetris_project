@@ -11,9 +11,9 @@ from src.filehandler import loadSequences
 
 def hill_climbing_tests():
     iterations = 10
-    sequence_length = 200
+    sequence_length = 500
     sample_size = 100
-    step_size = 0.5
+    step_size = 0.25
 
     initial_weight_vector = [4.0, -2.0, -1.0, -1.0, -1.0]
     new_weight_vector = hill_climb(initial_weight_vector, step_size, sample_size, sequence_length)
@@ -53,5 +53,5 @@ def compare_hill_climbing_weights():
 
 
 if __name__ == '__main__':
-    #hill_climbing_tests()
-    compare_hill_climbing_weights()
+    hill_climbing_tests()
+    #compare_hill_climbing_weights()
