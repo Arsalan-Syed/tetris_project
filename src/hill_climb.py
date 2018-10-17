@@ -63,9 +63,9 @@ def hill_climb(weight_vector, stepSize, samepleSize, sequenceLength):
     sequences = [[random.randint(0, 6) for x in range(sequenceLength)] for _ in range(seqAmount)]
 
     current_weights = weight_vector.copy()
-    current_fitness = fitness(current_weights, sequences[0])
+    current_fitness = fitness(current_weights, sequences[0], isHillClimb=True)
     for sequence in sequences[1:]:
-        current_fitness = min(current_fitness, fitness(current_weights, sequence))
+        current_fitness = min(current_fitness, fitness(current_weights, sequence, isHillClimb=True))
 
     while True:
         bestFitness = -10000000
@@ -76,9 +76,9 @@ def hill_climb(weight_vector, stepSize, samepleSize, sequenceLength):
 
         for neighbour in getWeightVectorNeighbours(current_weights, stepSize, samepleSize):
             # Set fitness to the worst possible out of all sequences
-            neighbourFitness = fitness(neighbour, sequences[0])
+            neighbourFitness = fitness(neighbour, sequences[0], isHillClimb=True)
             for sequence in sequences[1:]:
-                neighbourFitness = min(neighbourFitness, fitness(neighbour, sequence))
+                neighbourFitness = min(neighbourFitness, fitness(neighbour, sequence, isHillClimb=True))
 
             # Found an improvement
             if neighbourFitness > bestFitness:
