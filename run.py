@@ -7,14 +7,14 @@ import src.heuristic as heur
 
 def runInfinitely(weights=heur.defaultWeights):
     useGUI = True
-    App = env.TetrisApp(useGUI,weights)
+    App = env.TetrisApp(useGUI, weights)
     App.run()
 
 
 def runSequence(sequenceNumber, useGUI, weights=heur.defaultWeights):
     App = env.TetrisApp(useGUI, weights)
     sequences = fh.loadSequences("sequences/test1.txt")
-    print(App.runSequence(sequenceNumber))
+    print(App.runSequence(sequences[sequenceNumber]))
 
 
 def main():

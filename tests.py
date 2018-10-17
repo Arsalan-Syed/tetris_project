@@ -9,7 +9,7 @@ from src.evaluation import fitness
 from src.filehandler import loadSequences
 
 
-def hill_climbing_tests():
+def hill_climbing_optimization():
     iterations = 10
     sequence_length = 200
     sample_size = 100
@@ -26,7 +26,7 @@ def hill_climbing_tests():
     assert new_weights_average_score > old_weights_average_score
 
 
-def compare_hill_climbing_weights():
+def compare_weights():
     iterations = 10
     sequence_length = 1000
 
@@ -53,5 +53,5 @@ def compare_hill_climbing_weights():
 
 
 if __name__ == '__main__':
-    #hill_climbing_tests()
-    compare_hill_climbing_weights()
+    #hill_climbing_optimization()
+    compare_weights()
