@@ -57,18 +57,28 @@ Performs a hill climbing search to improve upon
 some initial weights. 
 '''
 def hill_climb(weight_vector, stepSize, samepleSize, sequenceLength):
+    # Specify the number of sequences here
+    seqAmount = 5
+
+    sequences = [[random.randint(0, 6) for x in range(sequenceLength)] for _ in range(seqAmount)]
+
     current_weights = weight_vector.copy()
-    sequence = [random.randint(0, 6) for x in range(sequenceLength)]
+    current_fitness = fitness(current_weights, sequences[0], isHillClimb=True)
+    for sequence in sequences[1:]:
+        current_fitness = min(current_fitness, fitness(current_weights, sequence, isHillClimb=True))
 
     while True:
         bestFitness = -10000000
         bestWeights = None
 
-        print(current_weights, fitness(current_weights, sequence))
+        print(current_weights, current_fitness)
 
 
         for neighbour in getWeightVectorNeighbours(current_weights, stepSize, samepleSize):
-            neighbourFitness = fitness(neighbour, sequence)
+            # Set fitness to the worst possible out of all sequences
+            neighbourFitness = fitness(neighbour, sequences[0], isHillClimb=True)
+            for sequence in sequences[1:]:
+                neighbourFitness = min(neighbourFitness, fitness(neighbour, sequence, isHillClimb=True))
 
             # Found an improvement
             if neighbourFitness > bestFitness:
@@ -76,8 +86,9 @@ def hill_climb(weight_vector, stepSize, samepleSize, sequenceLength):
                 bestWeights = neighbour
 
         # No more improvements found
-        if bestFitness <= fitness(current_weights, sequence):
-            print("Best: ", current_weights, fitness(current_weights, sequence))
+        if bestFitness <= current_fitness:
+            print("Best: ", current_weights, current_fitness)
             return current_weights
 
         current_weights = bestWeights
+        current_fitness = bestFitness

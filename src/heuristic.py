@@ -7,7 +7,12 @@ def print_board(board):
         print(row)
 
 
-defaultWeights = [4.0, -2.0, -1.0, -1.0, -1.0]
+# Chosen by us:
+defaultWeights = [5.0, -2.0, -1.0, -1.0, -1.0]
+# Genetic Algorithm result:
+#defaultWeights = [-13.88, -13.12, -9.18, -3.21, -2.0]
+# Hill Climb result:
+#defaultWeights = [4.15, -2.4, -0.75, -0.4, -0.4]
 
 '''
 Calculates the heuristic value of the board

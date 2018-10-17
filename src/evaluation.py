@@ -23,15 +23,15 @@ def fitnessRandom(weights):
 '''
 Calculates fitness on a given sequence
 '''
-def fitness(weights, sequence):
-     return TetrisApp(False, weights).runSequenceNoGUI(sequence)
+def fitness(weights, sequence, isHillClimb=False):
+     return TetrisApp(False, weights).runSequenceNoGUI(sequence, isHillClimb=isHillClimb)
 
 
 '''
 Generates several sequences and for every element in weight_list,
 computes the average fitness
 '''
-def fitnessAverage(weight_list, sequenceLength, iterations):
+def fitnessAverage(weight_list, sequenceLength, iterations, isHillClimb=False):
     scores = [0.0 for x in range(len(weight_list))]
 
     for iteration in range(iterations):
@@ -39,7 +39,7 @@ def fitnessAverage(weight_list, sequenceLength, iterations):
 
         # Try every one of the weights
         for i in range(len(weight_list)):
-            scores[i] += fitness(weight_list[i], sequence)
+            scores[i] += fitness(weight_list[i], sequence, isHillClimb=isHillClimb)
 
     return [score/iterations for score in scores]
 
